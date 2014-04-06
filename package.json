@@ -1,0 +1,24 @@
+{
+  "name": "stitch",
+  "version": "0.0.1",
+  "description": "Two way compiled and two way bound templates for JavaScript",
+  "main": "stitch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/collingo/stitch.git"
+  },
+  "author": "Nick Collings",
+  "bugs": {
+    "url": "https://github.com/collingo/stitch/issues"
+  },
+  "homepage": "https://github.com/collingo/stitch",
+  "devDependencies": {
+    "gulp": "~3.6.0",
+    "gulp-browserify": "~0.5.0",
+    "gulp-jshint": "~1.5.3",
+    "gulp-uglify": "~0.2.1"
+  }
+}
