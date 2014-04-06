@@ -1,113 +1,103 @@
-var render = $('#render');
-var unbound = $('#unbound');
+(function() {
 
-var data = {
-	name: "Dave",
-	age: 25,
-	town: "London"
-};
-var tpl;
+	var html = function(mod, tpl) {
 
-$.ajax({
-	url: '/template.html',
-	async: false,
-	success: function(data) {
-		tpl = data.replace(/(\r\n|\n|\r|\t)/gm,"");
-	}
-});
-
-function makeTemplateFunction(tpl) {
-	var tplSplit = tpl.split("{{");
-	var map = {};
-	_.forEach(tplSplit, function(item, i) {
-		item = item.split("}}");
-		if(item.length > 1) {
-			map[item[0]] = i + Object.keys(map).length;
-			tplSplit[i] = ['{{'+item[0]+'}}', item[1]];
-		}
-	});
-	tplSplit = _.flatten(tplSplit);
-	return function(tpl, map) {
-		return function(data) {
-			_.forEach(data, function(attr, key) {
-				tpl[map[key]] = data[key];
-			});
-			return tpl.join("");
-		}
-	}(tplSplit, map);
-}
-
-var tplFunction = makeTemplateFunction(tpl);
-
-render.html(tplFunction(data));
-
-function linearTree(tpl) {
-	var result = tpl.split("><");
-	_.forEach(result, function(item, itemCount) {
-		result[itemCount] = item = item.replace(/(<|>)/gm,"");
-		item = item.split("{{");
-		if(item.length > 1) {
-			_.forEach(item, function(subitem, subCount) {
-				subitem = subitem.split("}}");
-				result[itemCount] = [item[0], ">"+subitem[0], subitem[1]];
-			});
-		}
-	});
-	result = _.flatten(result);
-	return result;
-}
-
-var linTree = linearTree(tpl);
-var currentNode = render.find(':first-child');
-var stack = [];
-
-function checkNodeMatch(dom, tpl) {
-	var node = dom.nodeName.toLowerCase();
-	if(dom.nodeName.toLowerCase() === tpl) {
-		return true;
-	} else {
-		console.log("Node doesn't match template ("+node+" vs "+tpl+")");
-		return false;
-	}
-}
-function stepDom(next) {
-	var identifier = next.charAt(0);
-	switch(identifier) {
-		case ">":
-		break;
-		case "/":
-			if(currentNode.next().length) {
-				currentNode = currentNode.next();
-			} else {
-				currentNode = currentNode.parent();
-			}
-		break;
-		default:
-			currentNode = currentNode.find(":first-child");
-		break;
-	}
-}
-function bindToModel(attribute, element) {
-	console.log("Binding ", attribute, " to ", element);
-}
-function processNode(curr, rest) {
-	if(curr) {
-		var identifier = curr.charAt(0);
-		switch(identifier) {
-			case ">":
-				bindToModel(curr.substring(1), currentNode[0]);//.childNodes[0]);
-			break;
-			case "/":
-				stepDom(curr);
-			break;
-			default:
-				if(checkNodeMatch(currentNode[0], curr)) {
-					stepDom(rest[0]);
+		function templateFunction(tpl) {
+			var tplSplit = tpl.replace(/(\r\n|\n|\r|\t)/gm,"").split("{{");
+			var map = {};
+			_.forEach(tplSplit, function(item, i) {
+				item = item.split("}}");
+				if(item.length > 1) {
+					map[item[0]] = i + Object.keys(map).length;
+					tplSplit[i] = ['{{'+item[0]+'}}', item[1]];
 				}
-			break;
+			});
+			tplSplit = _.flatten(tplSplit);
+			return function(tpl, map) {
+				return function(data) {
+					_.forEach(data, function(attr, key) {
+						tpl[map[key]] = data[key];
+					});
+					return tpl.join("");
+				}
+			}(tplSplit, map);
 		}
-		processNode(rest.shift(), rest);
-	}
-};
-var curr = linTree.shift();
-processNode(curr, linTree);
+
+		return templateFunction(tpl)(mod);
+	};
+
+	var stitch = function(mod, tpl, dom) {
+
+		var count = 0;
+		var tplArray = linearTree(tpl);
+		
+		function linearTree(tpl) {
+			var result = tpl.replace(/(\r\n|\n|\r|\t)/gm,"").split("{{");
+			if(result.length > 1) {
+				_.forEach(result, function(item, count) {
+					item = item.split("}}");
+					if(item.length > 1) {
+						result[count] = [">"+item[0], item[1]];
+					} else {
+						result[count] = item[0];
+					}
+				});
+			}
+			result = _.flatten(result);
+			_.forEach(result, function(item, count) {
+				if(item.charAt(0) !== ">") {
+					result[count] = sub = item.split("><");
+					_.forEach(sub, function(subItem, subCount) {
+						subItem = subItem.replace(/(<|>)/gm,"");
+						if(subItem.charAt(0) === "/") {
+							result[count][subCount] = undefined;
+						} else {
+							result[count][subCount] = subItem.split(" ")[0];
+						}
+					});
+				}
+			});
+			result = _.compact(_.flatten(result));
+			return result;
+		}
+
+		function walkTheDOM(node, func) {
+			func(node);
+			node = node.firstChild;
+			while (node) {
+				count++;
+				walkTheDOM(node, func)
+				node = node.nextSibling;
+			}
+		}
+
+		walkTheDOM($(dom)[0], function(node) {
+			var expected = tplArray[count];
+			if(expected.charAt(0) === ">") {
+				console.log("Binding ", expected.substring(1), " to ", node)
+			} else {
+				if(node.nodeName.toLowerCase() !== expected) {
+					console.log("No match:", node.nodeName.toLowerCase(), expected);
+				}
+			}
+		});
+
+		return dom;
+	};
+
+	var dom = function(mod, tpl) {
+		return stitch(mod, tpl, $(html(mod, tpl))[0]);
+	};
+
+	window.T = {
+		html: function() {
+			return html.apply(this, arguments);
+		},
+		stitch: function() {
+			return stitch.apply(this, arguments);
+		},
+		dom: function() {
+			return dom.apply(this, arguments);
+		}
+	};
+}());

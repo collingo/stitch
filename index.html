@@ -14,5 +14,27 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 	<script src="stitch.js"></script>
+	<script>
+		var render = $('#render');
+		var unbound = $('#unbound');
+
+		var data = {
+			text: "hello",
+			childCount: 9
+		};/*{
+			name: "Dave",
+			age: 25,
+			town: "London"
+		};*/
+		var tpl;
+
+		$.ajax({
+			url: '/template.html',
+			async: false,
+			success: function(data) {
+				tpl = data;
+			}
+		});
+	</script>
 </body>
 </html>
