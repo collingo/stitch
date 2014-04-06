@@ -23,21 +23,21 @@
 			}(tplSplit, map);
 		}
 
-		return templateFunction(tpl)(mod);
+		return templateFunction(tpl)(mod.toJSON());
 	};
 
 	var stitch = function(mod, tpl, dom) {
 
-		var count = 0;
+		var nodeWalkCount = 0;
 		var tplArray = linearTree(tpl);
-		
+
 		function linearTree(tpl) {
-			var result = tpl.replace(/(\r\n|\n|\r|\t)/gm,"").split("{{");
+			var result = tpl.replace(/(\r\n|\n|\r|\t)/gm,"").replace(/\{\{/gm,"{{>").split("{{");
 			if(result.length > 1) {
 				_.forEach(result, function(item, count) {
 					item = item.split("}}");
 					if(item.length > 1) {
-						result[count] = [">"+item[0], item[1]];
+						result[count] = [item[0], item[1]];
 					} else {
 						result[count] = item[0];
 					}
@@ -65,20 +65,28 @@
 			func(node);
 			node = node.firstChild;
 			while (node) {
-				count++;
 				walkTheDOM(node, func)
 				node = node.nextSibling;
 			}
 		}
 
+		function bindData(node, attr) {
+			mod.on('change:'+attr, function(mod) {
+				node.data = mod.get(attr);
+			});
+		}
+
 		walkTheDOM($(dom)[0], function(node) {
-			var expected = tplArray[count];
-			if(expected.charAt(0) === ">") {
-				console.log("Binding ", expected.substring(1), " to ", node)
-			} else {
-				if(node.nodeName.toLowerCase() !== expected) {
-					console.log("No match:", node.nodeName.toLowerCase(), expected);
+			if(!(node.nodeName === "#text" && node.data.charAt(0) === "\n")) {
+				var expected = tplArray[nodeWalkCount];
+				if(expected.charAt(0) === ">") {
+					bindData(node, expected.substring(1));
+				} else {
+					if(node.nodeName.toLowerCase() !== expected) {
+						console.log("No match:", node.nodeName.toLowerCase(), expected);
+					}
 				}
+				nodeWalkCount++;
 			}
 		});
 
