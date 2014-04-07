@@ -1,3 +1,5 @@
+var $ = require('jquery');
+var Model = require('backbone').Model;
 var stitch = require('./stitch');
 
 window.stitch = stitch;
@@ -5,11 +7,11 @@ window.stitch = stitch;
 window.render = $('#render');
 window.unbound = $('#unbound');
 
-window.model = new Backbone.Model({
+window.model = new Model({
 	text: "hello",
 	childCount: 9
 });
-window.person = new Backbone.Model({
+window.person = new Model({
 	name: "Dave",
 	age: 25
 });
