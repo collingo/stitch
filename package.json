@@ -18,7 +18,11 @@
   "devDependencies": {
     "gulp": "~3.6.0",
     "gulp-jshint": "~1.5.3",
-    "browserify": "~3.38.1" 
+    "browserify": "~3.38.1",
+    "gulp-mocha": "~0.4.1",
+    "backbone": "~1.1.2",
+    "gulp-util": "~2.2.14",
+    "chai": "~1.9.1"
   },
   "dependencies": {
     "lodash": "~2.4.1",

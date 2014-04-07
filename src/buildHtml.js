@@ -1,4 +1,6 @@
 module.exports = function(mod, tpl) {
+	if(!arguments.length) throw new Error("Missing model and template parameters");
+	if(!tpl) throw new Error("Missing template parameter");
 
 	var templateFunction = (function() {
 		var rc = {
@@ -13,7 +15,7 @@ module.exports = function(mod, tpl) {
 					.replace(/["\n\r\u2028\u2029]/g, function($0) {
 				  		return rc[$0];
 					})
-					.replace(/\{\{([\s\S]+?)\}\}/g, '" + o["$1"] + "')
+					.replace(/\{\{([\s\S]+?)\}\}/g, '" + (o["$1"] || "{{$1}}") + "')
 				) + '";'
 			);
 		};
