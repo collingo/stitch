@@ -1,25 +1,21 @@
 var gulp = require('gulp');
-var browserify = require('gulp-browserify');
 var jshint = require('gulp-jshint');
 
-gulp.task('default', ['lint', 'scripts', 'watch']);
+var jsFiles = [
+	'gulpfile.js',
+	'src/**/*.js'
+];
+
+gulp.task('default', ['lint', 'watch']);
 
 gulp.task("watch", function() {
-    gulp.watch(['src/**/*.js', '!./node_modules/**/*', '!./www/**/*'], ['lint', 'scripts']);
+    gulp.watch(jsFiles, ['lint']);
 });
 
 gulp.task('lint', function() {
-    return gulp.src(['**/*.js', '!./node_modules/**/*', '!./www/**/*'])
+    return gulp.src(jsFiles)
         .pipe(jshint({
         	evil: true
         }))
         .pipe(jshint.reporter('default'));
-});
-
-gulp.task('scripts', function() {
-	gulp.src('src/index.js')
-        .pipe(browserify({
-          debug : true
-        }))
-        .pipe(gulp.dest('www'));
 });
