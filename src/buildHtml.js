@@ -1,6 +1,8 @@
 module.exports = function(mod, tpl) {
-	if(!arguments.length) throw new Error("Missing model and template parameters");
-	if(!tpl) throw new Error("Missing template parameter");
+	if(!arguments.length) throw new Error("Missing model and template");
+	if(!mod.toJSON || typeof mod.toJSON !== 'function') throw new Error("Model must be a Backbone Model"); 
+	if(!tpl) throw new Error("Missing template");
+	if(typeof tpl !== 'string') throw new Error("Template must be a string");
 
 	var templateFunction = (function() {
 		var rc = {

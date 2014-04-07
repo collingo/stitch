@@ -19,12 +19,12 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('test', function () {
-    gulp.src('tests/**/*.js')
-        .pipe(mocha({reporter: 'spec'}))
+gulp.task('test', ['lint'], function () {
+    return gulp.src('tests/**/*.js')
+        .pipe(mocha({reporter: 'dot'}))
         .on('error', function() {});
 });
 
 gulp.task("watch", function() {
-    gulp.watch(jsFiles, ['lint', 'test']);
+    return gulp.watch(jsFiles, ['lint', 'test']);
 });
