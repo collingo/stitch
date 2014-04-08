@@ -9,6 +9,14 @@ var result;
 var processTpl = function(tpl) {
 	result = templateToArray(tpl);
 };
+var expectLength = function(length) {
+	expect(result.length).to.equal(length);
+};
+var expectItems = function(items) {
+	for (var i = 0; i < items.length; i++) {
+		expect(result[i]).to.equal(items[i]);
+	}
+};
 
 describe('TemplateToArray', function() {
 
@@ -50,12 +58,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(2);
+				expectLength(2);
 			});
 
 			it('should return an array containing string identifiers for each element', function() {
-				expect(result[0]).to.equal('div');
-				expect(result[1]).to.equal('p');
+				expectItems(['div', 'p']);
 			});
 
 		});
@@ -67,12 +74,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(2);
+				expectLength(2);
 			});
 
 			it('should return an array containing string identifiers for each element', function() {
-				expect(result[0]).to.equal('div');
-				expect(result[1]).to.equal('p');
+				expectItems(['div', 'p']);
 			});
 
 		});
@@ -84,14 +90,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(4);
+				expectLength(4);
 			});
 
 			it('should return an array containing string identifiers for each element', function() {
-				expect(result[0]).to.equal('div');
-				expect(result[1]).to.equal('p');
-				expect(result[2]).to.equal('a');
-				expect(result[3]).to.equal('span');
+				expectItems(['div', 'p', 'a', 'span']);
 			});
 
 		});
@@ -103,11 +106,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(1);
+				expectLength(1);
 			});
 
 			it('should return an array containing a string identifier for the element', function() {
-				expect(result[0]).to.equal('input');
+				expectItems(['input']);
 			});
 
 		});
@@ -119,12 +122,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(2);
+				expectLength(2);
 			});
 
 			it('should return an array containing a string identifier for the element', function() {
-				expect(result[0]).to.equal('input');
-				expect(result[1]).to.equal('img');
+				expectItems(['input', 'img']);
 			});
 
 		});
@@ -136,11 +138,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(1);
+				expectLength(1);
 			});
 
 			it('should return an array containing a string identifier for the element', function() {
-				expect(result[0]).to.equal('div');
+				expectItems(['div']);
 			});
 
 		});
@@ -152,12 +154,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(2);
+				expectLength(2);
 			});
 
 			it('should return an array containing a string identifier for the element', function() {
-				expect(result[0]).to.equal('div');
-				expect(result[1]).to.equal('p');
+				expectItems(['div', 'p']);
 			});
 
 		});
@@ -169,12 +170,11 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expect(result.length).to.equal(2);
+				expectLength(2);
 			});
 
 			it('should return an array containing a string identifier for the element', function() {
-				expect(result[0]).to.equal('div');
-				expect(result[1]).to.equal('p');
+				expectItems(['div', 'p']);
 			});
 
 		});
