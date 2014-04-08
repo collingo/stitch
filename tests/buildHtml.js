@@ -15,7 +15,7 @@ describe('BuildHtml', function() {
 
 		describe('a simple Backbone model and string template', function() {
 
-			it('should return the original template', function(){
+			it('should return the original template string', function(){
 				var html = getHtml({
 					test: 'Hello'
 				}, '<div></div>');
@@ -26,7 +26,7 @@ describe('BuildHtml', function() {
 
 		describe('an empty Backbone model', function() {
 
-			it('should return a the original template string', function(){
+			it('should return the original template string', function(){
 				var html = getHtml({}, '<div>{{test}}</div>');
 				expect(html).to.equal('<div>{{test}}</div>');
 			});
