@@ -21,10 +21,16 @@ gulp.task('lint', function() {
 
 gulp.task('test', ['lint'], function () {
     return gulp.src('tests/**/*.js')
+        .pipe(mocha({reporter: 'spec'}))
+        .on('error', function() {});
+});
+
+gulp.task('tdd', ['lint'], function () {
+    return gulp.src('tests/**/*.js')
         .pipe(mocha({reporter: 'dot'}))
         .on('error', function() {});
 });
 
 gulp.task("watch", function() {
-    return gulp.watch(jsFiles, ['lint', 'test']);
+    return gulp.watch(jsFiles, ['lint', 'tdd']);
 });
