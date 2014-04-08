@@ -15,7 +15,7 @@ var exitOnJshintError = map(function (file, cb) {
     if (!file.jshint.success) {
         exitCode = 1;
     }
-    cb()
+    cb();
 });
 
 process.on('exit', function () {

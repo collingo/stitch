@@ -57,7 +57,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(3);
 			});
 
 			it('should return an array containing string identifiers for each element', function() {
