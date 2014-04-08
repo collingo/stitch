@@ -3,13 +3,24 @@ var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 var mocha = require('gulp-mocha');
 var gutil = require('gulp-util');
+var map = require('map-stream');
 
 var jsFiles = [
 	'gulpfile.js',
 	'src/**/*.js',
 	'tests/**/*.js'
 ];
+var exitCode = 0;
+var exitOnJshintError = map(function (file, cb) {
+    if (!file.jshint.success) {
+        exitCode = 1;
+    }
+    cb()
+});
 
+process.on('exit', function () {
+    process.exit(exitCode);
+});
 function Lint() {
     return gulp.src(jsFiles)
         .pipe(jshint({
@@ -20,7 +31,9 @@ function Lint() {
 function Test(reporter) {
     return gulp.src('tests/**/*.js')
         .pipe(mocha({reporter: reporter}))
-        .on('error', function() {});
+        .on('error', function() {
+            exitCode = 1;
+        });
 }
 
 ////////////////
@@ -42,7 +55,7 @@ gulp.task("watch", function() {
 // CI tasks //
 //////////////
 gulp.task('ciLint', function() {
-    return Lint().pipe(jshint.reporter('fail'));
+    return Lint().pipe(exitOnJshintError);
 });
 
 gulp.task('ciTest', ['ciLint'], Test.bind(this, 'spec'));
