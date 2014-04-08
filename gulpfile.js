@@ -20,7 +20,7 @@ function Lint() {
 function Test(reporter) {
     return gulp.src('tests/**/*.js')
         .pipe(mocha({reporter: reporter}))
-        .on('error', function() {})
+        .on('error', function() {});
 }
 
 ////////////////
