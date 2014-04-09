@@ -12,7 +12,7 @@ var expectLength = function(length) {
 	expect(result.length).to.equal(length);
 };
 var expectItems = function(items) {
-	for (var i = 0; i < items.length; i++) {
+	for (var i = 0; i < result.length; i++) {
 		expect(result[i]).to.equal(items[i]);
 	}
 };
@@ -174,6 +174,38 @@ describe('TemplateToArray', function() {
 
 			it('should return an array containing a string identifier for the element', function() {
 				expectItems(['div', 'p']);
+			});
+
+		});
+
+		describe('one placeholder', function() {
+
+			beforeEach(function() {
+				processTpl('<div>{{test}}</div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(2);
+			});
+
+			it('should return an array containing a string identifier for the element', function() {
+				expectItems(['div', '>test']);
+			});
+
+		});
+
+		describe('multiple placeholders', function() {
+
+			beforeEach(function() {
+				processTpl('<div>{{test}}</div><div>{{test}}<div>{{test}}</div></div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(6);
+			});
+
+			it('should return an array containing a string identifier for the element', function() {
+				expectItems(['div', '>test', 'div', '>test', 'div', '>test']);
 			});
 
 		});

@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var sinon = require('sinon');
 var Backbone = require('backbone');
 var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
@@ -8,11 +9,6 @@ var $ = doc.createWindow().jQuery;
 
 // SUT
 var stitchDom = require('../src/stitchDom');
-
-// helpers
-var runStitch = function(data, tpl, dom) {
-	return stitchDom(new Backbone.Model(data), tpl, dom);
-};
 
 describe('StitchDom', function() {
 
@@ -46,14 +42,45 @@ describe('StitchDom', function() {
 
 	});
 
-	// describe('when single item to bind', function() {
+	describe('when template contains an item to bind', function() {
 
-	// 	it('should return the original dom', function() {
-	// 		var dom = $('<div>{{test}}</div>')[0];
-	// 		var stitched = runStitch({}, "<div>{{test}}</div>", dom);
-	// 		expect(stitched).to.equal(dom);
-	// 	});
+		var stitched;
+		var model;
+		var tpl;
+		var dom;
 
-	// });
+		beforeEach(function() {
+			model = new Backbone.Model({
+				test: 'BindMe'
+			});
+			tpl = '<div>{{test}}</div>';
+			dom = $('<div>BindMe</div>')[0];
+		});
+
+		it('should return the original dom', function() {
+			stitched = stitchDom(model, tpl, dom);
+			expect(stitched).to.equal(dom);
+		});
+
+		it('should return the original dom with correct html', function() {
+			stitched = stitchDom(model, tpl, dom);
+			expect($('<div>').append($(stitched).clone()).html()).to.equal('<div>BindMe</div>');
+		});
+
+		it('should call the "on" method of model', function() {
+			this.sinon = sinon.sandbox.create();
+			var spiedOn = sinon.spy(model, 'on');
+			stitched = stitchDom(model, tpl, dom);
+			expect(spiedOn.called).to.equal(true);
+			this.sinon.restore();
+		});
+
+		it('should bind the item to the model', function() {
+			stitched = stitchDom(model, tpl, dom);
+			model.set('test', 'Changed');
+			expect($('<div>').append($(stitched).clone()).html()).to.equal('<div>Changed</div>');
+		});
+
+	});
 
 });
