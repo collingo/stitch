@@ -2,6 +2,8 @@ var templateToArray = require('./templateToArray');
 
 module.exports = function(mod, tpl, dom) {
 
+	var nodeWalkCount = 0;
+
 	var tplArray = templateToArray(tpl);
 
 	function walkTheDOM(node, func) {

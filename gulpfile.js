@@ -47,8 +47,12 @@ gulp.task('test', ['lint'], Test.bind(this, 'spec'));
 
 gulp.task('tdd', ['lint'], Test.bind(this, 'dot'));
 
-gulp.task("watch", function() {
-    return gulp.watch(jsFiles, ['lint', 'tdd']);
+gulp.task('clearConsole', function() {
+    process.stdout.write('\u001B[2J\u001B[0;0f');
+});
+
+gulp.task("watch", ['clearConsole'], function() {
+    return gulp.watch(jsFiles, ['clearConsole', 'lint', 'tdd']);
 });
 
 //////////////

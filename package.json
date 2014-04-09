@@ -25,7 +25,8 @@
     "gulp-util": "~2.2.14",
     "chai": "~1.9.1",
     "jshint-stylish": "~0.1.5",
-    "map-stream": "~0.1.0"
+    "map-stream": "~0.1.0",
+    "jsdom": "~0.10.5"
   },
   "dependencies": {
     "lodash": "~2.4.1",
