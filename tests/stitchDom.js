@@ -1,9 +1,8 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Backbone = require('backbone');
-var fs = require('fs');
 var jsdom = require('jsdom').jsdom;
-var jquery = fs.readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
+var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
 var doc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
 var $ = doc.createWindow().jQuery;
 
@@ -62,17 +61,15 @@ describe('StitchDom', function() {
 			expect(stitched).to.equal(dom);
 		});
 
-		it('should return the original dom with correct html', function() {
+		it('should return the original dom with the same html', function() {
 			stitched = stitchDom(model, tpl, dom);
 			expect($('<div>').append($(stitched).clone()).html()).to.equal('<div>BindMe</div>');
 		});
 
-		it('should call the "on" method of model', function() {
-			this.sinon = sinon.sandbox.create();
+		it('should call the "on" method of model once', function() {
 			var spiedOn = sinon.spy(model, 'on');
 			stitched = stitchDom(model, tpl, dom);
-			expect(spiedOn.called).to.equal(true);
-			this.sinon.restore();
+			expect(spiedOn.callCount).to.equal(1);
 		});
 
 		it('should bind the item to the model', function() {
