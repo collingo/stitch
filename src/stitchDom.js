@@ -1,6 +1,9 @@
 var templateToArray = require('./templateToArray');
 
 module.exports = function(mod, tpl, dom) {
+	if(!mod) throw new Error("Missing model, template and dom");
+	if(typeof tpl !== 'string') throw new Error("Missing template and dom");
+	if(!dom) throw new Error("Missing dom");
 
 	var nodeWalkCount = 0;
 

@@ -16,13 +16,44 @@ var runStitch = function(data, tpl, dom) {
 
 describe('StitchDom', function() {
 
-	describe('when instantiated', function() {
+	describe('when called without parameters', function() {
 
-		it('should return true', function() {
-			var dom = runStitch({}, "<div></div>", $('<div></div>')[0]);
-			expect(dom.nodeName).to.equal("DIV");
+		it('should throw an error with message', function() {
+			expect(function() {
+				stitchDom();
+			}).to.throw(Error, /Missing model, template and dom/);
 		});
 
 	});
+
+	describe('when missing tpl parameter', function() {
+
+		it('should throw an error with message', function() {
+			expect(function() {
+				stitchDom({});
+			}).to.throw(Error, /Missing template and dom/);
+		});
+
+	});
+
+	describe('when missing dom parameter', function() {
+
+		it('should throw an error with message', function() {
+			expect(function() {
+				stitchDom({}, '');
+			}).to.throw(Error, /Missing dom/);
+		});
+
+	});
+
+	// describe('when single item to bind', function() {
+
+	// 	it('should return the original dom', function() {
+	// 		var dom = $('<div>{{test}}</div>')[0];
+	// 		var stitched = runStitch({}, "<div>{{test}}</div>", dom);
+	// 		expect(stitched).to.equal(dom);
+	// 	});
+
+	// });
 
 });
