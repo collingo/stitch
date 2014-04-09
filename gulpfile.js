@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 var mocha = require('gulp-mocha');
-var gutil = require('gulp-util');
 var map = require('map-stream');
 
 var jsFiles = [
