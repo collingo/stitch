@@ -5,10 +5,15 @@ var jsdom = require('jsdom').jsdom;
 var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
 var doc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
 var $ = doc.createWindow().jQuery;
-var proxyquire =  require('proxyquire');
+var proxyquire = require('proxyquire');
 
 // SUT
 var buildDom = require('../src/buildDom');
+
+// helpers
+var getHtml = function(dom) {
+	return $('<div>').append($(dom).clone()).html();
+};
 
 describe('BuildDom', function() {
 
@@ -103,7 +108,7 @@ describe('BuildDom', function() {
 
 		it('should call stitchDom dependency with dom made from the output of buildHtml', function() {
 			var actualDom = stitchDomSpy.getCall(0).args[2];
-			expect($('<div>').append($(actualDom).clone()).html()).to.equal(buildHtmlResponse);
+			expect(getHtml(actualDom)).to.equal(buildHtmlResponse);
 		});
 
 		it('should return the result of stitchDom', function() {
