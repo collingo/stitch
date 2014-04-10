@@ -3,8 +3,9 @@ var sinon = require('sinon');
 var Backbone = require('backbone');
 var jsdom = require('jsdom').jsdom;
 var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
-var doc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
-var $ = doc.createWindow().jQuery;
+var jsdoc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
+var window = jsdoc.createWindow();
+var $ = window.jQuery;
 var proxyquire = require('proxyquire');
 
 // SUT
@@ -63,11 +64,10 @@ describe('BuildDom', function() {
 			buildHtmlSpy = sinon.spy(mocks, 'buildHtml');
 			stitchDomSpy = sinon.spy(mocks, 'stitchDom');
 			buildDom = proxyquire('../src/buildDom', {
-				'jquery': $,
 				'./buildHtml': mocks.buildHtml,
 				'./stitchDom': mocks.stitchDom
 			});
-			dom = buildDom(mod, tpl);
+			dom = buildDom(mod, tpl, window.document);
 		});
 
 		it('should call buildHtml dependency once', function() {

@@ -27,9 +27,8 @@
     "jsdom": "~0.10.5",
     "sinon": "~1.9.1",
     "mocha": "~1.18.2",
-    "proxyquire": "~0.6.0"
-  },
-  "dependencies": {
+    "proxyquire": "~0.6.0",
     "jquery": "~2.1.0"
-  }
+  },
+  "dependencies": {}
 }
