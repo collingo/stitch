@@ -18,8 +18,8 @@ module.exports = function(mod, tpl, dom) {
 		}
 	}
 
-	function bindData(node, attr) {
-		mod.on('change:'+attr, function(mod) {
+	function bindData(mod, attr, node) {
+		mod.on('change:'+attr, function() {
 			node.data = mod.get(attr);
 		});
 	}
@@ -28,7 +28,7 @@ module.exports = function(mod, tpl, dom) {
 		if(!(node.nodeName === "#text" && node.data.charAt(0) === "\n")) {
 			var expected = tplArray[nodeWalkCount];
 			if(expected.charAt(0) === ">") {
-				bindData(node, expected.substring(1));
+				bindData(mod, expected.substring(1), node);
 			} else {
 				if(node.nodeName.toLowerCase() !== expected) {
 					console.log("No match:", node.nodeName.toLowerCase(), expected);

@@ -50,7 +50,7 @@ describe('StitchDom', function() {
 	describe('when template contains an item to bind', function() {
 
 		var stitched;
-		var model;
+		var mod;
 		var tpl;
 		var dom;
 		var mocks;
@@ -59,7 +59,7 @@ describe('StitchDom', function() {
 		var templateToArrayResponse = ['div', '>test'];
 
 		beforeEach(function() {
-			model = new Backbone.Model({
+			mod = new Backbone.Model({
 				test: 'BindMe'
 			});
 			tpl = '<div>{{test}}</div>';
@@ -71,11 +71,12 @@ describe('StitchDom', function() {
 				}
 			};
 			templateToArraySpy = sinon.spy(mocks, 'templateToArray');
-			modelOnSpy = sinon.spy(model, 'on');
+			modelOnSpy = sinon.spy(mod, 'on');
+			modelGetSpy = sinon.spy(mod, 'get');
 			stitchDom = proxyquire('../src/stitchDom', {
 				'./templateToArray': mocks.templateToArray
 			});
-			stitched = stitchDom(model, tpl, dom);
+			stitched = stitchDom(mod, tpl, dom);
 		});
 
 		it('should return the original dom', function() {
@@ -94,13 +95,45 @@ describe('StitchDom', function() {
 			expect(templateToArraySpy.getCall(0).args[0]).to.equal(tpl);
 		});
 
-		it('should call the "on" method of model once', function() {
-			expect(modelOnSpy.callCount).to.equal(1);
-		});
+		describe('when the model change event is bound', function() {
 
-		it('should bind the item to the model', function() {
-			model.set('test', 'Changed');
-			expect(getHtml(stitched)).to.equal('<div>Changed</div>');
+			it('should call the "on" method of model the correct number of times', function() {
+				expect(modelOnSpy.callCount).to.equal(1);
+			});
+
+			it('should call the "on" method of model with correct event', function() {
+				expect(modelOnSpy.getCall(0).args[0]).to.equal('change:test');
+			});
+
+			it('should call the "on" method of model with a callback function', function() {
+				var callback = modelOnSpy.getCall(0).args[1];
+				expect(typeof callback).to.equal('function');
+			});
+
+			describe('the callback', function() {
+
+				var callback;
+
+				beforeEach(function() {
+					mod.set({
+						'test': 'Cabbage'
+					});
+				});
+
+				it('should fetch the data from the model', function() {
+					expect(modelGetSpy.callCount).to.equal(1);
+				});
+
+				it('should fetch the correct attribute from the model', function() {
+					expect(modelGetSpy.getCall(0).args[0]).to.equal('test');
+				});
+
+				it('should alter the dom correctly', function() {
+					expect(getHtml(stitched)).to.equal('<div>Cabbage</div>');
+				});
+
+			});
+
 		});
 
 	});
