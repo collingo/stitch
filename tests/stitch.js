@@ -32,83 +32,101 @@ describe('Stitch', function() {
 
 	});
 
-	describe('when run on client and passed a model and template', function() {
+	describe('when passed a model and template', function() {
 
-		var mod;
-		var tpl;
-		var dom;
+		var mod = new Backbone.Model({
+			test: "BindMe"
+		});
+		var tpl = '<div>{{test}}</div>';
+		var html;
 		var mocks;
-		var buildHtmlResponse = '<div>BindMe</div>';
-		var stitchDomResponse = '<div>Bound</div>';
+		var buildHtmlResponse = 'BlahBlahBlah';
 
 		beforeEach(function() {
-			mod = new Backbone.Model({
-				test: "BindMe"
-			});
-			tpl = '<div>{{test}}</div>';
-
 			mocks = {
 				buildHtml: function() {
 					return buildHtmlResponse;
-				},
-				stitchDom: function() {
-					return stitchDomResponse;
 				}
 			};
 			buildHtmlSpy = sinon.spy(mocks, 'buildHtml');
-			stitchDomSpy = sinon.spy(mocks, 'stitchDom');
-			buildDom = proxyquire('../src/buildDom', {
-				'jquery': $,
-				'./buildHtml': mocks.buildHtml,
-				'./stitchDom': mocks.stitchDom
+			stitch = proxyquire('../src/stitch', {
+				'./buildHtml': mocks.buildHtml
 			});
-			dom = buildDom(mod, tpl);
+			html = stitch(mod, tpl);
 		});
 
 		it('should call buildHtml dependency once', function() {
 			expect(buildHtmlSpy.calledOnce).to.equal(true);
 		});
 
-		// it('should call buildHtml dependency with two arguments', function() {
-		// 	expect(buildHtmlSpy.getCall(0).args.length).to.equal(2);
-		// });
+		it('should call buildHtml dependency with correct argument count', function() {
+			expect(buildHtmlSpy.getCall(0).args.length).to.equal(2);
+		});
 
-		// it('should call buildHtml dependency with model', function() {
-		// 	expect(buildHtmlSpy.getCall(0).args[0]).to.equal(mod);
-		// });
+		it('should call buildHtml dependency with model', function() {
+			expect(buildHtmlSpy.getCall(0).args[0]).to.equal(mod);
+		});
 
-		// it('should call buildHtml dependency with template', function() {
-		// 	expect(buildHtmlSpy.getCall(0).args[1]).to.equal(tpl);
-		// });
+		it('should call buildHtml dependency with template', function() {
+			expect(buildHtmlSpy.getCall(0).args[1]).to.equal(tpl);
+		});
 
-		// it('should call stitchDom dependency once', function() {
-		// 	expect(stitchDomSpy.calledOnce).to.equal(true);
-		// });
+		it('should return the result of buildHtml', function() {
+			expect(html).to.equal(buildHtmlResponse);
+		});
 
-		// it('should call stitchDom dependency with three arguments', function() {
-		// 	expect(stitchDomSpy.getCall(0).args.length).to.equal(3);
-		// });
+	});
 
-		// it('should call stitchDom dependency with model', function() {
-		// 	expect(stitchDomSpy.getCall(0).args[0]).to.equal(mod);
-		// });
+	describe('when passed a model, template and dom', function() {
 
-		// it('should call stitchDom dependency with template', function() {
-		// 	expect(stitchDomSpy.getCall(0).args[1]).to.equal(tpl);
-		// });
+		var mod;
+		var tpl = '<div>{{test}}</div>';
+		var dom;
+		var mocks;
+		var stitchDomResponse = 'BlahBlahBlah';
+		var stitched;
 
-		// it('should call stitchDom dependency with dom', function() {
-		// 	expect(!!stitchDomSpy.getCall(0).args[2].nodeName).to.equal(true);
-		// });
+		beforeEach(function() {
+			mod = new Backbone.Model({
+				test: "BindMe"
+			});
+			dom = $('<div>BindMe</div>')[0];
+			mocks = {
+				stitchDom: function() {
+					return stitchDomResponse;
+				}
+			};
+			stitchDomSpy = sinon.spy(mocks, 'stitchDom');
+			stitch = proxyquire('../src/stitch', {
+				'jquery': $,
+				'./stitchDom': mocks.stitchDom
+			});
+			stitched = stitch(mod, tpl, dom);
+		});
 
-		// it('should call stitchDom dependency with dom made from the output of buildHtml', function() {
-		// 	var actualDom = stitchDomSpy.getCall(0).args[2];
-		// 	expect($('<div>').append($(actualDom).clone()).html()).to.equal(buildHtmlResponse);
-		// });
+		it('should call stitchDom dependency once', function() {
+			expect(stitchDomSpy.calledOnce).to.equal(true);
+		});
 
-		// it('should return the result of stitchDom', function() {
-		// 	expect(dom).to.equal(stitchDomResponse);
-		// });
+		it('should call buildHtml dependency with correct argument count', function() {
+			expect(stitchDomSpy.getCall(0).args.length).to.equal(3);
+		});
+
+		it('should call stitchDom dependency with model', function() {
+			expect(stitchDomSpy.getCall(0).args[0]).to.equal(mod);
+		});
+
+		it('should call stitchDom dependency with template', function() {
+			expect(stitchDomSpy.getCall(0).args[1]).to.equal(tpl);
+		});
+
+		it('should call stitchDom dependency with some dom', function() {
+			expect(stitchDomSpy.getCall(0).args[2]).to.equal(dom);
+		});
+
+		it('should return the result of stitchDom', function() {
+			expect(stitched).to.equal(stitchDomResponse);
+		});
 
 	});
 
