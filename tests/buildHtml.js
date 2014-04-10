@@ -11,7 +11,49 @@ var getHtml = function(data, tpl) {
 
 describe('BuildHtml', function() {
 
-	describe('when called correctly with', function() {
+	describe('when called in error with', function() {
+
+		describe('no parameters', function() {
+
+			it('should throw an error with message', function() {
+				expect(buildHtml).to.throw(Error, /Missing model and template/);
+			});
+
+		});
+
+		describe('a plain object for the model', function() {
+
+			it('should throw an error with message', function() {
+				expect(function() {
+					buildHtml({}, "<div></div>");
+				}).to.throw(Error, /Model must be a Backbone Model/);
+			});
+
+		});
+
+		describe('no template', function() {
+
+			it('should throw an error with message', function() {
+				expect(function() {
+					buildHtml(new Backbone.Model({}));
+				}).to.throw(Error, /Missing template/);
+			});
+
+		});
+
+		describe('a non-string template', function() {
+
+			it('should throw an error with message', function() {
+				expect(function() {
+					buildHtml(new Backbone.Model({}), 123);
+				}).to.throw(Error, /Template must be a string/);
+			});
+
+		});
+
+	});
+
+	describe('when called with', function() {
 
 		describe('a simple Backbone model and string template', function() {
 
@@ -53,48 +95,6 @@ describe('BuildHtml', function() {
 					two: 'TWO'
 				}, '<div>\n\t<p>{{one}}<span>{{two}}</span></p>\n\t<input type="text" />\n</div>');
 				expect(html).to.equal('<div>\n\t<p>ONE<span>TWO</span></p>\n\t<input type="text" />\n</div>');
-			});
-
-		});
-
-	});
-
-	describe('when called in error with', function() {
-
-		describe('no parameters', function() {
-
-			it('should throw an error with message', function() {
-				expect(buildHtml).to.throw(Error, /Missing model and template/);
-			});
-
-		});
-
-		describe('a plain object for the model', function() {
-
-			it('should throw an error with message', function() {
-				expect(function() {
-					buildHtml({}, "<div></div>");
-				}).to.throw(Error, /Model must be a Backbone Model/);
-			});
-
-		});
-
-		describe('no template', function() {
-
-			it('should throw an error with message', function() {
-				expect(function() {
-					buildHtml(new Backbone.Model({}));
-				}).to.throw(Error, /Missing template/);
-			});
-
-		});
-
-		describe('a non-string template', function() {
-
-			it('should throw an error with message', function() {
-				expect(function() {
-					buildHtml(new Backbone.Model({}), 123);
-				}).to.throw(Error, /Template must be a string/);
 			});
 
 		});

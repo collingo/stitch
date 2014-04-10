@@ -19,7 +19,6 @@
   "devDependencies": {
     "gulp": "~3.6.0",
     "gulp-jshint": "~1.5.3",
-    "browserify": "~3.38.1",
     "gulp-mocha": "~0.4.1",
     "backbone": "~1.1.2",
     "chai": "~1.9.1",
@@ -31,7 +30,6 @@
     "proxyquire": "~0.6.0"
   },
   "dependencies": {
-    "lodash": "~2.4.1",
     "jquery": "~2.1.0"
   }
 }
