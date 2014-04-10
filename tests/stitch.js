@@ -98,7 +98,6 @@ describe('Stitch', function() {
 			};
 			stitchDomSpy = sinon.spy(mocks, 'stitchDom');
 			stitch = proxyquire('../src/stitch', {
-				'jquery': $,
 				'./stitchDom': mocks.stitchDom
 			});
 			stitched = stitch(mod, tpl, dom);
