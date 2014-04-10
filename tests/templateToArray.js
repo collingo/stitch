@@ -194,6 +194,22 @@ describe('TemplateToArray', function() {
 
 		});
 
+		describe('a placeholder with capitals', function() {
+
+			beforeEach(function() {
+				processTpl('<div>{{testCapitals}}</div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(2);
+			});
+
+			it('should return an array containing a string identifier for the element', function() {
+				expectItems(['div', '>testCapitals']);
+			});
+
+		});
+
 		describe('multiple placeholders', function() {
 
 			beforeEach(function() {
