@@ -47,6 +47,19 @@ describe('StitchDom', function() {
 
 	});
 
+	describe('when dom does not match the template', function() {
+
+		it('should throw an error highlighting the mismatching elements', function() {
+			expect(function() {
+				stitchDom(new Backbone.Model(), '<div>{{test}}</div>', $('<p>{{test}}</p>')[0]);
+			}).to.throw(Error, /Node does not match template, got p expecting div/);
+			expect(function() {
+				stitchDom(new Backbone.Model(), '<span>{{test}}</span>', $('<a>{{test}}</a>')[0]);
+			}).to.throw(Error, /Node does not match template, got a expecting span/);
+		});
+
+	});
+
 	describe('when template contains an item to bind', function() {
 
 		var stitched;
@@ -56,7 +69,12 @@ describe('StitchDom', function() {
 		var mocks;
 		var templateToArraySpy;
 		var modelOnSpy;
-		var templateToArrayResponse = ['div', '>test'];
+		var templateToArrayResponse = [{
+			type: 'div'
+		}, {
+			type: '>',
+			bind: 'test'
+		}];
 
 		beforeEach(function() {
 			mod = new Backbone.Model({

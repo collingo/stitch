@@ -27,11 +27,11 @@ module.exports = function(mod, tpl, dom) {
 	walkTheDOM(dom, function(node) {
 		if(!(node.nodeName === "#text" && node.data.charAt(0) === "\n")) {
 			var expected = tplArray[nodeWalkCount];
-			if(expected.charAt(0) === ">") {
-				bindData(mod, expected.substring(1), node);
+			if(expected.type === ">") {
+				bindData(mod, expected.bind, node);
 			} else {
-				if(node.nodeName.toLowerCase() !== expected) {
-					console.log("No match:", node.nodeName.toLowerCase(), expected);
+				if(node.nodeName.toLowerCase() !== expected.type) {
+					throw new Error('Node does not match template, got ' + node.nodeName.toLowerCase() + ' expecting ' + expected.type, node.nodeName.toLowerCase(), expected);
 				}
 			}
 			nodeWalkCount++;
