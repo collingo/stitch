@@ -52,10 +52,10 @@ describe('StitchDom', function() {
 		it('should throw an error highlighting the mismatching elements', function() {
 			expect(function() {
 				stitchDom(new Backbone.Model(), '<div>{{test}}</div>', $('<p>{{test}}</p>')[0]);
-			}).to.throw(Error, /Node does not match template, got p expecting div/);
+			}).to.throw(Error, /Node does not match template, got <p> expecting <div>/);
 			expect(function() {
 				stitchDom(new Backbone.Model(), '<span>{{test}}</span>', $('<a>{{test}}</a>')[0]);
-			}).to.throw(Error, /Node does not match template, got a expecting span/);
+			}).to.throw(Error, /Node does not match template, got <a> expecting <span>/);
 		});
 
 	});

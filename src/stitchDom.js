@@ -31,7 +31,7 @@ module.exports = function(mod, tpl, dom) {
 				bindData(mod, expected.bind, node);
 			} else {
 				if(node.nodeName.toLowerCase() !== expected.type) {
-					throw new Error('Node does not match template, got ' + node.nodeName.toLowerCase() + ' expecting ' + expected.type, node.nodeName.toLowerCase(), expected);
+					throw new Error('Node does not match template, got <' + node.nodeName.toLowerCase() + '> expecting <' + expected.type + '>', node.nodeName.toLowerCase(), expected);
 				}
 			}
 			nodeWalkCount++;
