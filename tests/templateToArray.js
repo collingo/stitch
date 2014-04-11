@@ -13,7 +13,7 @@ var expectLength = function(length) {
 };
 var expectItems = function(items) {
 	for (var i = 0; i < result.length; i++) {
-		expect(result[i]).to.equal(items[i]);
+		expect(result[i].type).to.equal(items[i].type);
 	}
 };
 
@@ -43,9 +43,9 @@ describe('TemplateToArray', function() {
 				expect(templateToArray('<div></div>')).to.have.property('length', 1);
 			});
 
-			it('should return an array containing a string identifying the element', function() {
-				expect(templateToArray('<div></div>')[0]).to.equal('div');
-				expect(templateToArray('<p></p>')[0]).to.equal('p');
+			it('should return an array containing object equivalients for each element', function() {
+				expect(templateToArray('<div></div>')[0].type).to.equal('div');
+				expect(templateToArray('<p></p>')[0].type).to.equal('p');
 			});
 
 		});
@@ -60,8 +60,12 @@ describe('TemplateToArray', function() {
 				expectLength(2);
 			});
 
-			it('should return an array containing string identifiers for each element', function() {
-				expectItems(['div', 'p']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: 'p'
+				}]);
 			});
 
 		});
@@ -76,8 +80,12 @@ describe('TemplateToArray', function() {
 				expectLength(2);
 			});
 
-			it('should return an array containing string identifiers for each element', function() {
-				expectItems(['div', 'p']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: 'p'
+				}]);
 			});
 
 		});
@@ -92,8 +100,16 @@ describe('TemplateToArray', function() {
 				expectLength(4);
 			});
 
-			it('should return an array containing string identifiers for each element', function() {
-				expectItems(['div', 'p', 'a', 'span']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: 'p'
+				}, {
+					type: 'a'
+				}, {
+					type: 'span'
+				}]);
 			});
 
 		});
@@ -108,8 +124,10 @@ describe('TemplateToArray', function() {
 				expectLength(1);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['input']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'input'
+				}]);
 			});
 
 		});
@@ -124,13 +142,17 @@ describe('TemplateToArray', function() {
 				expectLength(2);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['input', 'img']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'input'
+				}, {
+					type: 'img'
+				}]);
 			});
 
 		});
 
-		describe('an element with attributes', function() {
+		describe('an element with an attribute', function() {
 
 			beforeEach(function() {
 				processTpl('<div class="test"></div>');
@@ -140,40 +162,57 @@ describe('TemplateToArray', function() {
 				expectLength(1);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div']);
+			describe('returns an array of objects where each', function() {
+
+				it('should have correct type', function() {
+					expect(result[0].type).to.equal('div');
+				});
+
+				it('should contain an attributes hash', function() {
+					expect(typeof result[0].attributes).to.equal("object");
+				});
+
+				it('should contain an attributes hash of correct length', function() {
+					expect(Object.keys(result[0].attributes).length).to.equal(1);
+				});
+
+				it('should contain an attributes hash which stores the attributes as key value pairs', function() {
+					expect(result[0].attributes.class).to.equal("test");
+				});
+
 			});
 
 		});
 
-		describe('sibling elements with attributes', function() {
+		describe('an element with multiple attributes', function() {
 
 			beforeEach(function() {
-				processTpl('<div class="test"></div><p class="anothertest"></p>');
+				processTpl('<div class="test" attribute="hello"></div>');
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(1);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div', 'p']);
-			});
+			describe('returns an array of objects where each', function() {
 
-		});
+				it('should have correct type', function() {
+					expect(result[0].type).to.equal('div');
+				});
 
-		describe('nested elements with attributes', function() {
+				it('should contain an attributes hash', function() {
+					expect(typeof result[0].attributes).to.equal("object");
+				});
 
-			beforeEach(function() {
-				processTpl('<div class="test"><p class="anothertest"></p></div>');
-			});
+				it('should contain an attributes hash of correct length', function() {
+					expect(Object.keys(result[0].attributes).length).to.equal(2);
+				});
 
-			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
-			});
+				it('should contain an attributes hash which stores the attributes as key value pairs', function() {
+					expect(result[0].attributes.class).to.equal("test");
+					expect(result[0].attributes.attribute).to.equal("hello");
+				});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div', 'p']);
 			});
 
 		});
@@ -188,8 +227,13 @@ describe('TemplateToArray', function() {
 				expectLength(2);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div', '>test']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'test'
+				}]);
 			});
 
 		});
@@ -204,8 +248,13 @@ describe('TemplateToArray', function() {
 				expectLength(2);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div', '>testCapitals']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'testCapitals'
+				}]);
 			});
 
 		});
@@ -220,8 +269,23 @@ describe('TemplateToArray', function() {
 				expectLength(6);
 			});
 
-			it('should return an array containing a string identifier for the element', function() {
-				expectItems(['div', '>test', 'div', '>test', 'div', '>test']);
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'test'
+				},{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'test'
+				},{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'test'
+				}]);
 			});
 
 		});
