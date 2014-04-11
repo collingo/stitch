@@ -1,6 +1,5 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
-var Backbone = require('backbone');
 var jsdom = require('jsdom').jsdom;
 var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
 var jsdoc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
@@ -48,9 +47,9 @@ describe('BuildDom', function() {
 		var stitchDomResponse = '<div>Bound</div>';
 
 		beforeEach(function() {
-			mod = new Backbone.Model({
+			mod = {
 				test: "BindMe"
-			});
+			};
 			tpl = '<div>{{test}}</div>';
 
 			mocks = {

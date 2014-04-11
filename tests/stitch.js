@@ -1,6 +1,5 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
-var Backbone = require('backbone');
 var jsdom = require('jsdom').jsdom;
 var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
 var doc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');
@@ -34,9 +33,9 @@ describe('Stitch', function() {
 
 	describe('when passed a model and template', function() {
 
-		var mod = new Backbone.Model({
+		var mod = {
 			test: "BindMe"
-		});
+		};
 		var tpl = '<div>{{test}}</div>';
 		var html;
 		var mocks;
@@ -87,9 +86,9 @@ describe('Stitch', function() {
 		var stitched;
 
 		beforeEach(function() {
-			mod = new Backbone.Model({
+			mod = {
 				test: "BindMe"
-			});
+			};
 			dom = $('<div>BindMe</div>')[0];
 			mocks = {
 				stitchDom: function() {

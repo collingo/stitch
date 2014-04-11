@@ -1,6 +1,5 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
-var Backbone = require('backbone');
 var jsdom = require('jsdom').jsdom;
 var jquery = require('fs').readFileSync('node_modules/jquery/dist/jquery.js', 'utf-8');
 var doc = jsdom('<html><head><script>'+jquery+'</script></head><body></body></html>');

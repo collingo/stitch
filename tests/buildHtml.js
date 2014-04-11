@@ -1,5 +1,4 @@
 var expect = require('chai').expect;
-var Backbone = require('backbone');
 
 // SUT
 var buildHtml = require('../src/buildHtml');
