@@ -152,4 +152,60 @@ describe('StitchDom', function() {
 
 	});
 
+	describe('when template contains an item to bind', function() {
+
+		var stitched;
+		var mod;
+		var tpl;
+		var dom;
+		var mocks;
+		var templateToArraySpy;
+		var modelOnSpy;
+		var templateToArrayResponse = [{
+			type: 'div'
+		}, {
+			type: 'div'
+		}, {
+			type: '>',
+			bind: 'test'
+		}, {
+			type: 'div'
+		}, {
+			type: '>',
+			bind: 'another'
+		}];
+
+		beforeEach(function() {
+			mod = {
+				test: 'BindMe',
+				another: 'Me too'
+			};
+			tpl = '<div><div>{{test}}</div><div>{{another}}</div></div>';
+			dom = $('<div><div>BindMe</div><div>Me too</div></div>')[0];
+
+			mocks = {
+				templateToArray: function() {
+					return templateToArrayResponse;
+				},
+				observe: function() {}
+			};
+			templateToArraySpy = sinon.spy(mocks, 'templateToArray');
+			observeSpy = sinon.spy(mocks, 'observe');
+			stitchDom = proxyquire('../src/stitchDom', {
+				'./templateToArray': mocks.templateToArray,
+				'./observe': mocks.observe
+			});
+			stitched = stitchDom(mod, tpl, dom);
+		});
+
+		describe('when the model change event is bound', function() {
+
+			it('should call observe dependency the correct number of times', function() {
+				expect(observeSpy.callCount).to.equal(1);
+			});
+
+		});
+
+	});
+
 });

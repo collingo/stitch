@@ -7,7 +7,7 @@ module.exports = function(mod, tpl, dom) {
 	if(!dom) throw new Error("Missing dom");
 
 	var nodeWalkCount = 0;
-
+	var bindings = {};
 	var tplArray = templateToArray(tpl);
 
 	function walkTheDOM(node, func) {
@@ -19,17 +19,21 @@ module.exports = function(mod, tpl, dom) {
 		}
 	}
 
-	function bindData(mod, attr, node) {
-		observe(mod, function() {
-			node.data = mod[attr];
-		});
+	function bindData(attr, node) {
+		bindings[attr] = node;
+	}
+
+	function onModelChange(changes) {
+		for (var i = 0; i < changes.length; i++) {
+			bindings[changes[i].name].data = changes[i].object[changes[i].name];
+		}
 	}
 
 	walkTheDOM(dom, function(node) {
 		if(!(node.nodeName === "#text" && node.data.charAt(0) === "\n")) {
 			var expected = tplArray[nodeWalkCount];
 			if(expected.type === ">") {
-				bindData(mod, expected.bind, node);
+				bindData(expected.bind, node);
 			} else {
 				if(node.nodeName.toLowerCase() !== expected.type) {
 					throw new Error('Node does not match template, got <' + node.nodeName.toLowerCase() + '> expecting <' + expected.type + '>', node.nodeName.toLowerCase(), expected);
@@ -38,6 +42,8 @@ module.exports = function(mod, tpl, dom) {
 			nodeWalkCount++;
 		}
 	});
+
+	observe(mod, onModelChange);
 
 	return dom;
 };
