@@ -1,4 +1,5 @@
 var templateToArray = require('./templateToArray');
+var observe = require('./observe');
 
 module.exports = function(mod, tpl, dom) {
 	if(!mod) throw new Error("Missing model, template and dom");
@@ -19,8 +20,8 @@ module.exports = function(mod, tpl, dom) {
 	}
 
 	function bindData(mod, attr, node) {
-		mod.on('change:'+attr, function() {
-			node.data = mod.get(attr);
+		observe(mod, function() {
+			node.data = mod[attr];
 		});
 	}
 

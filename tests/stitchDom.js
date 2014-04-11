@@ -51,10 +51,10 @@ describe('StitchDom', function() {
 
 		it('should throw an error highlighting the mismatching elements', function() {
 			expect(function() {
-				stitchDom(new Backbone.Model(), '<div>{{test}}</div>', $('<p>{{test}}</p>')[0]);
+				stitchDom({}, '<div>{{test}}</div>', $('<p>{{test}}</p>')[0]);
 			}).to.throw(Error, /Node does not match template, got <p> expecting <div>/);
 			expect(function() {
-				stitchDom(new Backbone.Model(), '<span>{{test}}</span>', $('<a>{{test}}</a>')[0]);
+				stitchDom({}, '<span>{{test}}</span>', $('<a>{{test}}</a>')[0]);
 			}).to.throw(Error, /Node does not match template, got <a> expecting <span>/);
 		});
 
@@ -77,22 +77,23 @@ describe('StitchDom', function() {
 		}];
 
 		beforeEach(function() {
-			mod = new Backbone.Model({
+			mod = {
 				test: 'BindMe'
-			});
+			};
 			tpl = '<div>{{test}}</div>';
 			dom = $('<div>BindMe</div>')[0];
 
 			mocks = {
 				templateToArray: function() {
 					return templateToArrayResponse;
-				}
+				},
+				observe: function() {}
 			};
 			templateToArraySpy = sinon.spy(mocks, 'templateToArray');
-			modelOnSpy = sinon.spy(mod, 'on');
-			modelGetSpy = sinon.spy(mod, 'get');
+			observeSpy = sinon.spy(mocks, 'observe');
 			stitchDom = proxyquire('../src/stitchDom', {
-				'./templateToArray': mocks.templateToArray
+				'./templateToArray': mocks.templateToArray,
+				'./observe': mocks.observe
 			});
 			stitched = stitchDom(mod, tpl, dom);
 		});
@@ -115,16 +116,16 @@ describe('StitchDom', function() {
 
 		describe('when the model change event is bound', function() {
 
-			it('should call the "on" method of model the correct number of times', function() {
-				expect(modelOnSpy.callCount).to.equal(1);
+			it('should call observe dependency the correct number of times', function() {
+				expect(observeSpy.callCount).to.equal(1);
 			});
 
-			it('should call the "on" method of model with correct event', function() {
-				expect(modelOnSpy.getCall(0).args[0]).to.equal('change:test');
+			it('should call observe dependency with model', function() {
+				expect(observeSpy.getCall(0).args[0]).to.equal(mod);
 			});
 
-			it('should call the "on" method of model with a callback function', function() {
-				var callback = modelOnSpy.getCall(0).args[1];
+			it('should call observe dependency with a callback function', function() {
+				var callback = observeSpy.getCall(0).args[1];
 				expect(typeof callback).to.equal('function');
 			});
 
@@ -133,21 +134,17 @@ describe('StitchDom', function() {
 				var callback;
 
 				beforeEach(function() {
-					mod.set({
-						'test': 'Cabbage'
-					});
-				});
-
-				it('should fetch the data from the model', function() {
-					expect(modelGetSpy.callCount).to.equal(1);
-				});
-
-				it('should fetch the correct attribute from the model', function() {
-					expect(modelGetSpy.getCall(0).args[0]).to.equal('test');
+					mod.test = "Eggs";
+					callback = observeSpy.getCall(0).args[1]([{
+						object: mod,
+						type: 'update',
+						name: 'test',
+						oldValue: 'BindMe'
+					}]);
 				});
 
 				it('should alter the dom correctly', function() {
-					expect(getHtml(stitched)).to.equal('<div>Cabbage</div>');
+					expect(getHtml(stitched)).to.equal('<div>Eggs</div>');
 				});
 
 			});
