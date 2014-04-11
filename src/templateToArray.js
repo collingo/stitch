@@ -1,7 +1,7 @@
 module.exports = function templateToArray(tpl) {
 	if(!tpl) return [];
 
-	var search = tpl.match(/<[a-z]+[^<]*>|\{\{[a-zA-Z]+\}\}/g);
+	var search = tpl.match(/<[a-z]+[^>]*>|\{\{[a-zA-Z]+\}\}/g);
 	var i, tag, tags = [];
 	for (i = 0; i < search.length; i++) {
 		tag = getTag(search[i]);
