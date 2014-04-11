@@ -1,41 +1,37 @@
 module.exports = function templateToArray(tpl) {
 	if(!tpl) return [];
 
-	var search = tpl.match(/<[a-z]+[^>]*>|\{\{[a-zA-Z]+\}\}/g);
+	var match = tpl.match(/<[a-z]+[^>]*>|\{\{[a-zA-Z]+\}\}/g);
 	var i, tag, tags = [];
-	for (i = 0; i < search.length; i++) {
-		tag = getTag(search[i]);
-		tag.attributes = getAttributesHash(search[i]);
+	for (i = 0; i < match.length; i++) {
+		tag = getTag(match[i]);
+		tag.attributes = getAttributesHash(match[i]);
 		tags[i] = tag;
 	}
 
 	function getTag(tagString) {
 		var match = tagString.match(/^<([a-z]+)/);
-		var tag;
+		var tag = {};
 		if(match && match.length > 1) {
-			tag = {
-				type: match[1]
-			};
+			tag.type = match[1];
 		} else {
-			tag = {
-				type: '>',
-				bind: tagString.match(/^\{\{([a-zA-Z]+)\}\}/)[1]
-			};
+			tag.type = '>';
+			tag.bind = tagString.match(/^\{\{([a-zA-Z]+)\}\}/)[1];
 		}
 		return tag;
 	}
 
 	function getAttributesHash(tagString) {
-		var attributes = {};
-		var attrs = tagString.match(/([a-z]+\=\"[^\"]*\")/g);
+		var hash = {};
+		var match = tagString.match(/([a-z]+\=\"[^\"]*\")/g);
 		var attr;
-		if(attrs) {
-			for(var i = 0; i < attrs.length; i++) {
-				attr = attrs[i].split('=');
-				attributes[attr[0]] = attr[1].match(/^[\"]*([a-zA-Z ]+)/)[1];
+		if(match) {
+			for(var i = 0; i < match.length; i++) {
+				attr = match[i].split('=');
+				hash[attr[0]] = attr[1].match(/^[\"]*([a-zA-Z ]+)/)[1];
 			}
 		}
-		return attributes;
+		return hash;
 	}
 
 	return tags;
