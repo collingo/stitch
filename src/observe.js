@@ -1,5 +1,6 @@
 var watch = require('watchjs').watch;
-module.exports = function(o, cb) {
+console.log('Object.observe', !!Object.observe);
+module.exports = Object.observe || function(o, cb) {
 	watch(o, function(prop, action, newValue, oldValue) {
 		cb([{
 			object: o,

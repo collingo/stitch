@@ -4,11 +4,6 @@ var Backbone = require('backbone');
 // SUT
 var buildHtml = require('../src/buildHtml');
 
-// helpers
-var getHtml = function(data, tpl) {
-	return buildHtml(new Backbone.Model(data), tpl);
-};
-
 describe('BuildHtml', function() {
 
 	describe('when called in error with', function() {
@@ -21,21 +16,11 @@ describe('BuildHtml', function() {
 
 		});
 
-		describe('a plain object for the model', function() {
-
-			it('should throw an error with message', function() {
-				expect(function() {
-					buildHtml({}, "<div></div>");
-				}).to.throw(Error, /Model must be a Backbone Model/);
-			});
-
-		});
-
 		describe('no template', function() {
 
 			it('should throw an error with message', function() {
 				expect(function() {
-					buildHtml(new Backbone.Model({}));
+					buildHtml({});
 				}).to.throw(Error, /Missing template/);
 			});
 
@@ -45,7 +30,7 @@ describe('BuildHtml', function() {
 
 			it('should throw an error with message', function() {
 				expect(function() {
-					buildHtml(new Backbone.Model({}), 123);
+					buildHtml({}, 123);
 				}).to.throw(Error, /Template must be a string/);
 			});
 
@@ -55,10 +40,10 @@ describe('BuildHtml', function() {
 
 	describe('when called with', function() {
 
-		describe('a simple Backbone model and string template', function() {
+		describe('a simple model and string template', function() {
 
 			it('should return the original template string', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					test: 'Hello'
 				}, '<div></div>');
 				expect(html).to.equal('<div></div>');
@@ -66,19 +51,19 @@ describe('BuildHtml', function() {
 
 		});
 
-		describe('an empty Backbone model', function() {
+		describe('an empty model', function() {
 
 			it('should return the original template string', function(){
-				var html = getHtml({}, '<div>{{test}}</div>');
+				var html = buildHtml({}, '<div>{{test}}</div>');
 				expect(html).to.equal('<div>{{test}}</div>');
 			});
 
 		});
 
-		describe('a mismatching Backbone model', function() {
+		describe('a mismatching model', function() {
 
 			it('should return the string with only matching placeholders replaced', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					match: 'matched',
 					mismatch: 'not matched'
 				}, '<div><div>{{match}}</div><div>{{matchAgain}}</div></div>');
@@ -90,7 +75,7 @@ describe('BuildHtml', function() {
 		describe('a template containing whitespace characters', function() {
 
 			it('should return the populated template', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					one: 'ONE',
 					two: 'TWO'
 				}, '<div>\n\t<p>{{one}}<span>{{two}}</span></p>\n\t<input type="text" />\n</div>');
@@ -106,7 +91,7 @@ describe('BuildHtml', function() {
 		describe('an attribute to match', function() {
 
 			it('should return the populated template', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					test: 'Hello'
 				}, '<div>{{test}}</div>');
 				expect(html).to.equal('<div>Hello</div>');
@@ -117,7 +102,7 @@ describe('BuildHtml', function() {
 		describe('multiple attributes to match', function() {
 
 			it('should return the populated template', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					one: 'ONE',
 					two: 'TWO'
 				}, '<div><p>{{one}}<span>{{two}}</span></p></div>');
@@ -129,7 +114,7 @@ describe('BuildHtml', function() {
 		describe('a self closing element (input)', function() {
 
 			it('should return the populated template', function(){
-				var html = getHtml({
+				var html = buildHtml({
 					one: 'ONE',
 					two: 'TWO'
 				}, '<div><p>{{one}}<span>{{two}}</span></p><input type="text" /></div>');
