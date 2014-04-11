@@ -27,13 +27,12 @@ module.exports = function templateToArray(tpl) {
 
 	function getAttributesHash(tagString) {
 		var attributes = {};
-		var attrs = tagString.match(/\s([\"\'\=a-z]+[^>]*)/);
+		var attrs = tagString.match(/([a-z]+\=\"[^\"]*\")/g);
 		var attr;
 		if(attrs) {
-			attrs = attrs[1].split(' ');
 			for(var i = 0; i < attrs.length; i++) {
 				attr = attrs[i].split('=');
-				attributes[attr[0]] = attr[1].match(/^[\'\"]*([a-zA-Z]+)/)[1];
+				attributes[attr[0]] = attr[1].match(/^[\"]*([a-zA-Z ]+)/)[1];
 			}
 		}
 		return attributes;
