@@ -31,7 +31,6 @@
     "jquery": "~2.1.0"
   },
   "dependencies": {
-    "observe-js": "~0.1.0",
     "watchjs": "0.0.0"
   }
 }
