@@ -87,7 +87,7 @@ describe('BuildHtml', function() {
 
 	describe('when the template has', function() {
 
-		describe('an attribute to match', function() {
+		describe('a placeholder to match', function() {
 
 			it('should return the populated template', function(){
 				var html = buildHtml({
@@ -98,7 +98,7 @@ describe('BuildHtml', function() {
 
 		});
 
-		describe('multiple attributes to match', function() {
+		describe('multiple placeholders to match', function() {
 
 			it('should return the populated template', function(){
 				var html = buildHtml({
@@ -106,6 +106,17 @@ describe('BuildHtml', function() {
 					two: 'TWO'
 				}, '<div><p>{{one}}<span>{{two}}</span></p></div>');
 				expect(html).to.equal('<div><p>ONE<span>TWO</span></p></div>');
+			});
+
+		});
+
+		describe('a placeholder in an attribute', function() {
+
+			it('should return the populated template', function(){
+				var html = buildHtml({
+					test: 'Hello'
+				}, '<div class="{{attr}}">{{test}}</div>');
+				expect(html).to.equal('<div class="{{attr}}">Hello</div>');
 			});
 
 		});

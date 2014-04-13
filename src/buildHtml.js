@@ -17,7 +17,7 @@ module.exports = function(mod, tpl) {
 					.replace(/["\n\r\u2028\u2029]/g, function($0) {
 				  		return rc[$0];
 					})
-					.replace(/\{\{([\s\S]+?)\}\}/g, '" + (o["$1"] || "{{$1}}") + "')
+					.replace(/\>\{\{([a-zA-Z]+?)\}\}</g, '" + (o["$1"] ? ">"+o["$1"]+"<" : ">{{$1}}<") + "')
 				) + '";'
 			);
 		};
