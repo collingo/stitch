@@ -25,10 +25,11 @@ module.exports = function templateToArray(tpl) {
 		var hash = {};
 		var match = tagString.match(/([a-z]+\=\"[^\"]*\")/g);
 		var attr;
+		console.log(match);
 		if(match) {
 			for(var i = 0; i < match.length; i++) {
 				attr = match[i].split('=');
-				hash[attr[0]] = attr[1].match(/^[\"]*([a-zA-Z ]+)/)[1];
+				hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z ]+)/)[1];
 			}
 		}
 		return hash;

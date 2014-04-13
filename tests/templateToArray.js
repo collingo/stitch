@@ -184,6 +184,30 @@ describe('TemplateToArray', function() {
 
 		});
 
+		describe('an element with an attribute containing a placeholder', function() {
+
+			beforeEach(function() {
+				processTpl('<div show="{{place}}"></div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(1);
+			});
+
+			describe('returns an array of objects where each', function() {
+
+				it('should contain an attributes hash of correct length', function() {
+					expect(Object.keys(result[0].attributes).length).to.equal(1);
+				});
+
+				it('should contain an attributes hash which stores the attributes as key value pairs', function() {
+					expect(result[0].attributes.show).to.equal("{{place}}");
+				});
+
+			});
+
+		});
+
 		describe('an element with multiple classes', function() {
 
 			beforeEach(function() {
