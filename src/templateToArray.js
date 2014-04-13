@@ -28,7 +28,7 @@ module.exports = function templateToArray(tpl) {
 		if(match) {
 			for(var i = 0; i < match.length; i++) {
 				attr = match[i].split('=');
-				hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z ]+)/)[1];
+				hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z1-9 ]+)/)[1];
 			}
 		}
 		return hash;
