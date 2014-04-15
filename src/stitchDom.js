@@ -19,13 +19,21 @@ module.exports = function(mod, tpl, dom) {
 		}
 	}
 
-	function bindData(attr, node) {
-		bindings[attr] = node;
+	function bindData(prop, node) {
+		bindings[prop] = function(value) {
+			node.data = value;
+		};
+	}
+
+	function bindAttr(prop, node, attr) {
+		bindings[prop] = function(value) {
+			node.setAttribute(attr, !!value);
+		};
 	}
 
 	function onModelChange(changes) {
 		for (var i = 0; i < changes.length; i++) {
-			bindings[changes[i].name].data = changes[i].object[changes[i].name];
+			bindings[changes[i].name](changes[i].object[changes[i].name]);
 		}
 	}
 
@@ -37,6 +45,15 @@ module.exports = function(mod, tpl, dom) {
 			} else {
 				if(node.nodeName.toLowerCase() !== expected.type) {
 					throw new Error('Node does not match template, got <' + node.nodeName.toLowerCase() + '> expecting <' + expected.type + '>', node.nodeName.toLowerCase(), expected);
+				}
+				var attrHash = expected.attributes;
+				for(var attr in attrHash) {
+					if(attrHash.hasOwnProperty(attr)) {
+						var expression = attrHash[attr].match(/^\{\{([a-zA-Z]+)\}\}/)[1];
+						if(expression) {
+							bindAttr(expression, node, attr);
+						}
+					}
 				}
 			}
 			nodeWalkCount++;

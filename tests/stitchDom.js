@@ -152,7 +152,7 @@ describe('StitchDom', function() {
 
 	});
 
-	describe('when template contains an item to bind', function() {
+	describe('when template contains multiple items to bind', function() {
 
 		var stitched;
 		var mod;
@@ -202,6 +202,86 @@ describe('StitchDom', function() {
 
 			it('should call observe dependency the correct number of times', function() {
 				expect(observeSpy.callCount).to.equal(1);
+			});
+
+		});
+
+	});
+
+	describe('when template contains placeholders in attributes', function() {
+
+		var stitched;
+		var mod;
+		var tpl;
+		var dom;
+		var mocks;
+		var templateToArraySpy;
+		var modelOnSpy;
+		var templateToArrayResponse = [{
+			type: 'div',
+			attributes: {
+				show: "{{count}}"
+			}
+		}, {
+			type: '>',
+			bind: 'test'
+		}];
+
+		beforeEach(function() {
+			mod = {
+				test: 'BindMe',
+				count: 5
+			};
+			tpl = '<div show="{{count}}">{{test}}</div>';
+			dom = $('<div show="true">BindMe</div>')[0];
+
+			mocks = {
+				templateToArray: function() {
+					return templateToArrayResponse;
+				},
+				observe: function() {}
+			};
+			templateToArraySpy = sinon.spy(mocks, 'templateToArray');
+			observeSpy = sinon.spy(mocks, 'observe');
+			stitchDom = proxyquire('../src/stitchDom', {
+				'./templateToArray': mocks.templateToArray,
+				'./observe': mocks.observe
+			});
+			stitched = stitchDom(mod, tpl, dom);
+		});
+
+		it('should return the original dom with unchanged html', function() {
+			expect(getHtml(stitched)).to.equal('<div show="true">BindMe</div>');
+		});
+
+		describe('when the model change event is bound', function() {
+
+			describe('the callback', function() {
+
+				var callback;
+
+				it('should alter the dom correctly when no change to expression', function() {
+					mod.count = 3;
+					callback = observeSpy.getCall(0).args[1]([{
+						object: mod,
+						type: 'update',
+						name: 'count',
+						oldValue: 5
+					}]);
+					expect(getHtml(stitched)).to.equal('<div show="true">BindMe</div>');
+				});
+
+				it('should alter the dom correctly', function() {
+					mod.count = 0;
+					callback = observeSpy.getCall(0).args[1]([{
+						object: mod,
+						type: 'update',
+						name: 'count',
+						oldValue: 5
+					}]);
+					expect(getHtml(stitched)).to.equal('<div show="false">BindMe</div>');
+				});
+
 			});
 
 		});
