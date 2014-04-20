@@ -6,8 +6,10 @@ module.exports = function(mod, tpl) {
 
 	var templateFunction = (function() {
 		var rc = {
-			'\n': '\\n', '\"': '\\\"',
-			'\u2028': '\\u2028', '\u2029': '\\u2029'
+			'\n': '\\n',
+			'\"': '\\\"',
+			'\u2028': '\\u2028',
+			'\u2029': '\\u2029'
 		};
 		return function makeTemplateFunction(str) {
 			return new Function(
@@ -17,7 +19,7 @@ module.exports = function(mod, tpl) {
 					.replace(/["\n\r\u2028\u2029]/g, function($0) {
 				  		return rc[$0];
 					})
-					.replace(/\>\{\{([a-zA-Z]+?)\}\}</g, '" + (o["$1"] ? ">"+o["$1"]+"<" : ">{{$1}}<") + "')
+					.replace(/\{\{([a-zA-Z]+?)\}\}/g, '" + (o["$1"] ? o["$1"] : "{{$1}}") + "')
 				) + '";'
 			);
 		};

@@ -110,17 +110,6 @@ describe('BuildHtml', function() {
 
 		});
 
-		describe('a placeholder in an attribute', function() {
-
-			it('should return the populated template', function(){
-				var html = buildHtml({
-					test: 'Hello'
-				}, '<div class="{{attr}}">{{test}}</div>');
-				expect(html).to.equal('<div class="{{attr}}">Hello</div>');
-			});
-
-		});
-
 		describe('a self closing element (input)', function() {
 
 			it('should return the populated template', function(){
@@ -129,6 +118,18 @@ describe('BuildHtml', function() {
 					two: 'TWO'
 				}, '<div><p>{{one}}<span>{{two}}</span></p><input type="text" /></div>');
 				expect(html).to.equal('<div><p>ONE<span>TWO</span></p><input type="text" /></div>');
+			});
+
+		});
+
+		describe('a placeholder in an attribute', function() {
+
+			it('should populate the attribute', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					attr: "AttrContents"
+				}, '<div class="{{attr}}">{{test}}</div>');
+				expect(html).to.equal('<div class="AttrContents">Hello</div>');
 			});
 
 		});
