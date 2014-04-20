@@ -134,6 +134,20 @@ describe('BuildHtml', function() {
 
 		});
 
+		describe('a placeholder has a nested reference', function() {
+
+			it('should populate the placeholder with the nested value', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					nested: {
+						key: 'value'
+					}
+				}, '<div>{{nested.key}}</div>');
+				expect(html).to.equal('<div>value</div>');
+			});
+
+		});
+
 	});
 
 });

@@ -11,15 +11,26 @@ module.exports = function(mod, tpl) {
 			'\u2028': '\\u2028',
 			'\u2029': '\\u2029'
 		};
+		var getNested = function(location) {
+			var locationArr = location.split('.');
+			var result = 'o';
+			for (var i = 0; i < locationArr.length; i++) {
+				result += '["' + locationArr[i] + '"]';
+			}
+			return result;
+		};
 		return function makeTemplateFunction(str) {
 			return new Function(
-			  	'o',
-			  	'return "' + (
+				'o',
+				'return "' + (
 					str
 					.replace(/["\n\r\u2028\u2029]/g, function($0) {
-				  		return rc[$0];
+						return rc[$0];
 					})
-					.replace(/\{\{([a-zA-Z]+?)\}\}/g, '" + (o["$1"] ? o["$1"] : "{{$1}}") + "')
+					.replace(/\{\{([a-zA-Z\.]+?)\}\}/g, function() {
+						var getter = getNested(arguments[1]);
+						return '" + (' + getter + ' ? ' + getter + ' : "{{' + arguments[1] + '}}") + "';
+					})
 				) + '";'
 			);
 		};
