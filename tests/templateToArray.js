@@ -40,11 +40,14 @@ describe('TemplateToArray', function() {
 		describe('a single element', function() {
 
 			it('should return an array with one item', function() {
-				expect(templateToArray('<div></div>')).to.have.property('length', 1);
+				expect(templateToArray('<div></div>')).to.have.property('length', 2);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
 				expect(templateToArray('<div></div>')[0].type).to.equal('div');
+				expect(templateToArray('<div></div>')[0].close).to.equal(undefined);
+				expect(templateToArray('<div></div>')[1].type).to.equal('div');
+				expect(templateToArray('<div></div>')[1].close).to.equal(true);
 				expect(templateToArray('<p></p>')[0].type).to.equal('p');
 			});
 
@@ -57,14 +60,20 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(4);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
 				expectItems([{
 					type: 'div'
 				}, {
+					type: 'div',
+					close: true
+				}, {
 					type: 'p'
+				}, {
+					type: 'p',
+					close: true
 				}]);
 			});
 
@@ -77,7 +86,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(4);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
@@ -85,6 +94,12 @@ describe('TemplateToArray', function() {
 					type: 'div'
 				}, {
 					type: 'p'
+				}, {
+					type: 'p',
+					close: true
+				}, {
+					type: 'div',
+					close: true
 				}]);
 			});
 
@@ -97,7 +112,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(4);
+				expectLength(8);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
@@ -106,9 +121,21 @@ describe('TemplateToArray', function() {
 				}, {
 					type: 'p'
 				}, {
+					type: 'p',
+					close: true
+				}, {
+					type: 'div',
+					close: true
+				}, {
 					type: 'a'
 				}, {
 					type: 'span'
+				}, {
+					type: 'span',
+					close: true
+				}, {
+					type: 'a',
+					close: true
 				}]);
 			});
 
@@ -159,7 +186,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(1);
+				expectLength(2);
 			});
 
 			describe('returns an array of objects where each', function() {
@@ -191,7 +218,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(1);
+				expectLength(2);
 			});
 
 			describe('returns an array of objects where each', function() {
@@ -215,7 +242,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(1);
+				expectLength(2);
 			});
 
 			describe('returns an array of objects where each', function() {
@@ -224,8 +251,9 @@ describe('TemplateToArray', function() {
 					expect(Object.keys(result[0].attributes).length).to.equal(1);
 				});
 
-				it('should contain an attributes hash which stores the attributes as key value pairs', function() {
-					expect(result[0].attributes.show).to.equal("{{place}}");
+				it('should contain an attributes hash which stores objects for each placeholder attribute', function() {
+					expect(result[0].attributes.show.type).to.equal('>');
+					expect(result[0].attributes.show.bind).to.equal('place');
 				});
 
 			});
@@ -239,7 +267,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(1);
+				expectLength(2);
 			});
 
 			describe('returns an array of objects where each', function() {
@@ -263,7 +291,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(1);
+				expectLength(2);
 			});
 
 			describe('returns an array of objects where each', function() {
@@ -296,7 +324,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(3);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
@@ -305,6 +333,9 @@ describe('TemplateToArray', function() {
 				}, {
 					type: '>',
 					bind: 'test'
+				}, {
+					type: 'div',
+					close: true
 				}]);
 			});
 
@@ -317,7 +348,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(2);
+				expectLength(3);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
@@ -326,6 +357,9 @@ describe('TemplateToArray', function() {
 				}, {
 					type: '>',
 					bind: 'testCapitals'
+				}, {
+					type: 'div',
+					close: true
 				}]);
 			});
 
@@ -338,7 +372,7 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array of length matching the number of elements', function() {
-				expectLength(6);
+				expectLength(9);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
@@ -347,6 +381,9 @@ describe('TemplateToArray', function() {
 				}, {
 					type: '>',
 					bind: 'test'
+				}, {
+					type: 'div',
+					close: true
 				},{
 					type: 'div'
 				}, {
@@ -357,6 +394,36 @@ describe('TemplateToArray', function() {
 				}, {
 					type: '>',
 					bind: 'test'
+				}, {
+					type: 'div',
+					close: true
+				}, {
+					type: 'div',
+					close: true
+				}]);
+			});
+
+		});
+
+		describe('a nested placeholder', function() {
+
+			beforeEach(function() {
+				processTpl('<div>{{test.nested}}</div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(3);
+			});
+
+			it('should return an array containing object equivalients for each element', function() {
+				expectItems([{
+					type: 'div'
+				}, {
+					type: '>',
+					bind: 'test.nested'
+				}, {
+					type: 'div',
+					close: true
 				}]);
 			});
 

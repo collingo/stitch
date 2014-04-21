@@ -1,40 +1,88 @@
+var domModeler = require('./templateToArray');
+
 module.exports = function(mod, tpl) {
 	if(!arguments.length) throw new Error("Missing model and template");
 	if(typeof mod !== 'object') throw new Error("Model must be plain object"); 
 	if(!tpl) throw new Error("Missing template");
 	if(typeof tpl !== 'string') throw new Error("Template must be a string");
 
-	var templateFunction = (function() {
-		var rc = {
-			'\n': '\\n',
-			'\"': '\\\"',
-			'\u2028': '\\u2028',
-			'\u2029': '\\u2029'
-		};
-		var getNested = function(location) {
-			var locationArr = location.split('.');
-			var result = 'o';
-			for (var i = 0; i < locationArr.length; i++) {
-				result += '["' + locationArr[i] + '"]';
+	var getNested = function(model, location) {
+		var locationArr = location.split('.');
+		var result = model;
+		for (var i = 0; i < locationArr.length; i++) {
+			result = result[locationArr[i]];
+		}
+		return result;
+	};
+	var loopRepeats = function(items, domPartialModel) {
+		var html = '';
+		for(var i = 0; i < items.length; i++) {
+			html += buildHtml(domPartialModel.slice(0), {
+				value: items[i]
+			});
+		}
+		return html;
+	};
+	var buildAttrString = function(attributes) {
+		var html = '';
+		for(var key in attributes) {
+			if(attributes[key].bind) {
+				html += ' ' + key + '="' + getNested(mod, attributes[key].bind) +'"';
+			} else {
+				html += ' ' + key + '="' + attributes[key] +'"';
 			}
-			return result;
-		};
-		return function makeTemplateFunction(str) {
-			return new Function(
-				'o',
-				'return "' + (
-					str
-					.replace(/["\n\r\u2028\u2029]/g, function($0) {
-						return rc[$0];
-					})
-					.replace(/\{\{([a-zA-Z\.]+?)\}\}/g, function() {
-						var getter = getNested(arguments[1]);
-						return '" + (' + getter + ' ? ' + getter + ' : "{{' + arguments[1] + '}}") + "';
-					})
-				) + '";'
-			);
-		};
-	}());
+		}
+		return html;
+	};
+	var buildTagString = function(tag) {
+		var html = '<';
+		if(tag.close) html += '/';
+		html += tag.type;
+		html += buildAttrString(tag.attributes);
+		if(tag.type === 'input') html += ' /';
+		html += '>';
+		return html;
+	};
+	var getPartial = function(domModel) {
+		var dom = [];
+		var stack = [];
+		if(!domModel[0].close) {
+			var domItem = domModel.shift();
+			dom.push(domItem);
+			stack.push(domItem.type);
+			while(stack.length) {
+				domItem = domModel.shift();
+				if(domItem.type !== '>') {
+					if(domItem.close) {
+						stack.pop();
+					} else {
+						stack.push(domItem.type);
+					}
+				}
+				dom.push(domItem);
+			}
+		}
+		return dom;
+	};
+	var buildHtml = function(domModel, model) {
+		var html = '';
+		while(domModel.length) {
+			var domItem = domModel.shift();
+			if(domItem.type !== '>') {
+				html += buildTagString(domItem);
+				if(domItem.attributes.repeat) {
+					var items = model[domItem.attributes.repeat];
+					var partial = getPartial(domModel);
+					html += loopRepeats(items, partial);
+				}
+			} else {
+				// placeholder
+				var value = getNested(model, domItem.bind);
+				html += (value === undefined) ? '{{'+domItem.bind+'}}' : value;
+			}
+		}
+		return html;
+	};
 
-	return templateFunction(tpl)(mod);
+	return buildHtml(domModeler(tpl), mod);
 };

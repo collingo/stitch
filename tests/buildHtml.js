@@ -73,12 +73,12 @@ describe('BuildHtml', function() {
 
 		describe('a template containing whitespace characters', function() {
 
-			it('should return the populated template', function(){
+			it('should strip the whitespace', function(){
 				var html = buildHtml({
 					one: 'ONE',
 					two: 'TWO'
 				}, '<div>\n\t<p>{{one}}<span>{{two}}</span></p>\n\t<input type="text" />\n</div>');
-				expect(html).to.equal('<div>\n\t<p>ONE<span>TWO</span></p>\n\t<input type="text" />\n</div>');
+				expect(html).to.equal('<div><p>ONE<span>TWO</span></p><input type="text" /></div>');
 			});
 
 		});
@@ -144,6 +144,26 @@ describe('BuildHtml', function() {
 					}
 				}, '<div>{{nested.key}}</div>');
 				expect(html).to.equal('<div>value</div>');
+			});
+
+		});
+
+	});
+
+	describe('when the template has nested repeats', function() {
+
+		describe('of array of strings', function() {
+
+			it('should loop over the values and output in template', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					repeat: [
+						'value1',
+						'value2',
+						'value3'
+					]
+				}, '<div>{{test}}</div><ul repeat="repeat"><li>{{value}}</li></ul>');
+				expect(html).to.equal('<div>Hello</div><ul repeat="repeat"><li>value1</li><li>value2</li><li>value3</li></ul>');
 			});
 
 		});

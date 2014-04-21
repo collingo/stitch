@@ -1,22 +1,31 @@
 module.exports = function templateToArray(tpl) {
 	if(!tpl) return [];
 
-	var match = tpl.match(/<[a-z]+[^>]*>|\{\{[a-zA-Z]+\}\}/g);
+	var match = tpl.match(/<\/?[a-z]+[^>]*>|\{\{[a-zA-Z\.]+\}\}/g);
 	var i, tag, tags = [];
 	for (i = 0; i < match.length; i++) {
 		tag = getTag(match[i]);
-		tag.attributes = getAttributesHash(match[i]);
-		tags[i] = tag;
+		if(tag) {
+			tag.attributes = getAttributesHash(match[i]);
+			tags.push(tag);
+		}
 	}
 
 	function getTag(tagString) {
-		var match = tagString.match(/^<([a-z]+)/);
 		var tag = {};
-		if(match && match.length > 1) {
-			tag.type = match[1];
+		if(tagString.charAt(0) === "<") {
+			var match = tagString.match(/^<(\/?)([a-z]+)/);
+			if(!match[1].length) {
+				// opening tag
+				tag.type = match[2];
+			} else {
+				// closing tag
+				tag.type = match[2];
+				tag.close = true;
+			}
 		} else {
 			tag.type = '>';
-			tag.bind = tagString.match(/^\{\{([a-zA-Z]+)\}\}/)[1];
+			tag.bind = tagString.match(/^\{\{([a-zA-Z\.]+)\}\}/)[1];
 		}
 		return tag;
 	}
@@ -28,7 +37,15 @@ module.exports = function templateToArray(tpl) {
 		if(match) {
 			for(var i = 0; i < match.length; i++) {
 				attr = match[i].split('=');
-				hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z1-9 ]+)/)[1];
+				var placeholder = attr[1].match(/\{\{([a-zA-Z\.]+)\}\}/);
+				if(placeholder) {
+					hash[attr[0]] = {
+						type: '>',
+						bind: placeholder[1]
+					};
+				} else {
+					hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z1-9 ]+)/)[1];
+				}
 			}
 		}
 		return hash;
