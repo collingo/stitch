@@ -152,7 +152,7 @@ describe('BuildHtml', function() {
 
 	describe('when the template has nested repeats', function() {
 
-		describe('of array of strings', function() {
+		describe('as array of strings', function() {
 
 			it('should loop over the values and output in template', function(){
 				var html = buildHtml({
@@ -162,8 +162,44 @@ describe('BuildHtml', function() {
 						'value2',
 						'value3'
 					]
-				}, '<div>{{test}}</div><ul repeat="repeat"><li>{{value}}</li></ul>');
-				expect(html).to.equal('<div>Hello</div><ul repeat="repeat"><li>value1</li><li>value2</li><li>value3</li></ul>');
+				}, '<ul repeat="repeat"><li>{{value}}</li></ul>');
+				expect(html).to.equal('<ul repeat="repeat"><li>value1</li><li>value2</li><li>value3</li></ul>');
+			});
+
+		});
+
+		describe('as array of objects', function() {
+
+			it('should loop over the values and output in template', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					repeat: [{
+						text: 'value1'
+					}, {
+						text: 'value2'
+					}, {
+						text: 'value3'
+					}]
+				}, '<ul repeat="repeat"><li>{{text}}</li></ul>');
+				expect(html).to.equal('<ul repeat="repeat"><li>value1</li><li>value2</li><li>value3</li></ul>');
+			});
+
+		});
+
+		describe('where the partial template has a self closing item', function() {
+
+			it('should loop over the values and output in template', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					repeat: [{
+						text: 'value1'
+					}, {
+						text: 'value2'
+					}, {
+						text: 'value3'
+					}]
+				}, '<ul repeat="repeat"><li><input /><div>{{text}}</div></li></ul>');
+				expect(html).to.equal('<ul repeat="repeat"><li><input /><div>value1</div></li><li><input /><div>value2</div></li><li><input /><div>value3</div></li></ul>');
 			});
 
 		});

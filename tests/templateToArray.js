@@ -152,9 +152,8 @@ describe('TemplateToArray', function() {
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
-				expectItems([{
-					type: 'input'
-				}]);
+				expect(result[0].type).to.equal('input');
+				expect(result[0].self).to.equal(true);
 			});
 
 		});

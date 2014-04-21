@@ -18,6 +18,9 @@ module.exports = function templateToArray(tpl) {
 			if(!match[1].length) {
 				// opening tag
 				tag.type = match[2];
+				if(tagString.charAt(tagString.length-2) === '/') {
+					tag.self = true;
+				}
 			} else {
 				// closing tag
 				tag.type = match[2];

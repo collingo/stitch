@@ -17,9 +17,13 @@ module.exports = function(mod, tpl) {
 	var loopRepeats = function(items, domPartialModel) {
 		var html = '';
 		for(var i = 0; i < items.length; i++) {
-			html += buildHtml(domPartialModel.slice(0), {
-				value: items[i]
-			});
+			var model = items[i];
+			if(typeof items[i] !== "object") {
+				model = {
+					value: items[i]
+				};
+			}
+			html += buildHtml(domPartialModel.slice(0), model);
 		}
 		return html;
 	};
@@ -56,7 +60,9 @@ module.exports = function(mod, tpl) {
 					if(domItem.close) {
 						stack.pop();
 					} else {
-						stack.push(domItem.type);
+						if(!domItem.self) {
+							stack.push(domItem.type);
+						}
 					}
 				}
 				dom.push(domItem);
