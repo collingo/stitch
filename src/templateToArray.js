@@ -1,7 +1,7 @@
 module.exports = function templateToArray(tpl) {
 	if(!tpl) return [];
 
-	var match = tpl.match(/<\/?[a-z]+[^>]*>|\{\{[a-zA-Z\.]+\}\}/g);
+	var match = tpl.match(/<\/?[a-z]+[^>]*>|\{\{[a-zA-Z\.]+\}\}|[a-zA-Z]+/g);
 	var i, tag, tags = [];
 	for (i = 0; i < match.length; i++) {
 		tag = getTag(match[i]);
@@ -27,8 +27,14 @@ module.exports = function templateToArray(tpl) {
 				tag.close = true;
 			}
 		} else {
-			tag.type = '>';
-			tag.bind = tagString.match(/^\{\{([a-zA-Z\.]+)\}\}/)[1];
+			var placeholder = tagString.match(/^\{\{([a-zA-Z\.]+)\}\}/);
+			if(placeholder) {
+				tag.type = '>';
+				tag.bind = placeholder[1];
+			} else {
+				tag.type = "#text";
+				tag.value = tagString;
+			}
 		}
 		return tag;
 	}

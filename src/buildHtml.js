@@ -27,22 +27,22 @@ module.exports = function(mod, tpl) {
 		}
 		return html;
 	};
-	var buildAttrString = function(attributes) {
+	var buildAttrString = function(attributes, model) {
 		var html = '';
 		for(var key in attributes) {
 			if(attributes[key].bind) {
-				html += ' ' + key + '="' + getNested(mod, attributes[key].bind) +'"';
+				html += ' ' + key + '="' + getNested(model, attributes[key].bind) +'"';
 			} else {
 				html += ' ' + key + '="' + attributes[key] +'"';
 			}
 		}
 		return html;
 	};
-	var buildTagString = function(tag) {
+	var buildTagString = function(tag, model) {
 		var html = '<';
 		if(tag.close) html += '/';
 		html += tag.type;
-		html += buildAttrString(tag.attributes);
+		html += buildAttrString(tag.attributes, model);
 		if(tag.type === 'input') html += ' /';
 		html += '>';
 		return html;
@@ -74,17 +74,23 @@ module.exports = function(mod, tpl) {
 		var html = '';
 		while(domModel.length) {
 			var domItem = domModel.shift();
-			if(domItem.type !== '>') {
-				html += buildTagString(domItem);
-				if(domItem.attributes.repeat) {
-					var items = getNested(model, domItem.attributes.repeat);
-					var partial = getPartial(domModel);
-					html += loopRepeats(items, partial);
-				}
-			} else {
-				// placeholder
-				var value = getNested(model, domItem.bind);
-				html += (value === undefined) ? '{{'+domItem.bind+'}}' : value;
+			switch(domItem.type) {
+				case '>':
+					// placeholder
+					var value = getNested(model, domItem.bind);
+					html += (value === undefined) ? '{{'+domItem.bind+'}}' : value;
+				break;
+				case '#text':
+					html += domItem.value;
+				break;
+				default:
+					html += buildTagString(domItem, model);
+					if(domItem.attributes.repeat) {
+						var items = getNested(model, domItem.attributes.repeat);
+						var partial = getPartial(domModel);
+						html += loopRepeats(items, partial);
+					}
+				break;
 			}
 		}
 		return html;

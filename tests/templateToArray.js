@@ -39,7 +39,7 @@ describe('TemplateToArray', function() {
 
 		describe('a single element', function() {
 
-			it('should return an array with one item', function() {
+			it('should return an array with correct number of items', function() {
 				expect(templateToArray('<div></div>')).to.have.property('length', 2);
 			});
 
@@ -55,15 +55,36 @@ describe('TemplateToArray', function() {
 
 		describe('a tagName containing a number', function() {
 
-			it('should return an array with one item', function() {
-				expect(templateToArray('<h1></h1>')).to.have.property('length', 2);
+			var tpl = '<h1></h1>';
+
+			it('should return an array with correct number of items', function() {
+				expect(templateToArray(tpl)).to.have.property('length', 2);
 			});
 
 			it('should return an array containing object equivalients for each element', function() {
-				expect(templateToArray('<h1></h1>')[0].type).to.equal('h1');
-				expect(templateToArray('<h1></h1>')[0].close).to.equal(undefined);
-				expect(templateToArray('<h1></h1>')[1].type).to.equal('h1');
-				expect(templateToArray('<h1></h1>')[1].close).to.equal(true);
+				expect(templateToArray(tpl)[0].type).to.equal('h1');
+				expect(templateToArray(tpl)[0].close).to.equal(undefined);
+				expect(templateToArray(tpl)[1].type).to.equal('h1');
+				expect(templateToArray(tpl)[1].close).to.equal(true);
+			});
+
+		});
+
+		describe('an element containing a text node', function() {
+
+			var tpl = '<label>Hello</label>';
+
+			it('should return an array with correct number of items', function() {
+				expect(templateToArray(tpl)).to.have.property('length', 3);
+			});
+
+			it('should return an array containing object equivalients for each element', function() {
+				expect(templateToArray(tpl)[0].type).to.equal('label');
+				expect(templateToArray(tpl)[0].close).to.equal(undefined);
+				expect(templateToArray(tpl)[1].type).to.equal('#text');
+				expect(templateToArray(tpl)[1].value).to.equal('Hello');
+				expect(templateToArray(tpl)[2].type).to.equal('label');
+				expect(templateToArray(tpl)[2].close).to.equal(true);
 			});
 
 		});

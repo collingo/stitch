@@ -87,6 +87,17 @@ describe('BuildHtml', function() {
 
 	describe('when the template has', function() {
 
+		describe('plain html with value', function() {
+
+			it('should return the original template untouched', function(){
+				var html = buildHtml({
+					test: 'Hello'
+				}, '<div>test</div>');
+				expect(html).to.equal('<div>test</div>');
+			});
+
+		});
+
 		describe('a placeholder to match', function() {
 
 			it('should return the populated template', function(){
@@ -204,7 +215,7 @@ describe('BuildHtml', function() {
 
 		});
 
-		describe('which nested in the model', function() {
+		describe('which is nested in the model', function() {
 
 			it('should loop over the values and output in template', function(){
 				var html = buildHtml({
@@ -220,6 +231,29 @@ describe('BuildHtml', function() {
 					}
 				}, '<ul repeat="nest.repeat"><li><input /><div>{{text}}</div></li></ul>');
 				expect(html).to.equal('<ul repeat="nest.repeat"><li><input /><div>value1</div></li><li><input /><div>value2</div></li><li><input /><div>value3</div></li></ul>');
+			});
+
+		});
+
+		describe('containing a attributte placeholder', function() {
+
+			it('should loop over the values and output in template', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					nest: {
+						repeat: [{
+							text: 'value1',
+							class: 'class1'
+						}, {
+							text: 'value2',
+							class: 'class2'
+						}, {
+							text: 'value3',
+							class: 'class3'
+						}]
+					}
+				}, '<ul repeat="nest.repeat"><li class="{{class}}"><div>{{text}}</div></li></ul>');
+				expect(html).to.equal('<ul repeat="nest.repeat"><li class="class1"><div>value1</div></li><li class="class2"><div>value2</div></li><li class="class3"><div>value3</div></li></ul>');
 			});
 
 		});
