@@ -150,7 +150,7 @@ describe('BuildHtml', function() {
 
 	});
 
-	describe('when the template has nested repeats', function() {
+	describe('when the template has repeats', function() {
 
 		describe('as array of strings', function() {
 
@@ -200,6 +200,26 @@ describe('BuildHtml', function() {
 					}]
 				}, '<ul repeat="repeat"><li><input /><div>{{text}}</div></li></ul>');
 				expect(html).to.equal('<ul repeat="repeat"><li><input /><div>value1</div></li><li><input /><div>value2</div></li><li><input /><div>value3</div></li></ul>');
+			});
+
+		});
+
+		describe('which nested in the model', function() {
+
+			it('should loop over the values and output in template', function(){
+				var html = buildHtml({
+					test: 'Hello',
+					nest: {
+						repeat: [{
+							text: 'value1'
+						}, {
+							text: 'value2'
+						}, {
+							text: 'value3'
+						}]
+					}
+				}, '<ul repeat="nest.repeat"><li><input /><div>{{text}}</div></li></ul>');
+				expect(html).to.equal('<ul repeat="nest.repeat"><li><input /><div>value1</div></li><li><input /><div>value2</div></li><li><input /><div>value3</div></li></ul>');
 			});
 
 		});

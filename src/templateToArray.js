@@ -14,7 +14,7 @@ module.exports = function templateToArray(tpl) {
 	function getTag(tagString) {
 		var tag = {};
 		if(tagString.charAt(0) === "<") {
-			var match = tagString.match(/^<(\/?)([a-z]+)/);
+			var match = tagString.match(/^<(\/?)([a-z0-9]+)/);
 			if(!match[1].length) {
 				// opening tag
 				tag.type = match[2];
@@ -47,7 +47,7 @@ module.exports = function templateToArray(tpl) {
 						bind: placeholder[1]
 					};
 				} else {
-					hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z1-9 ]+)/)[1];
+					hash[attr[0]] = attr[1].match(/^[\"]*([\{\}a-zA-Z1-9\. ]+)/)[1];
 				}
 			}
 		}

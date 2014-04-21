@@ -77,7 +77,7 @@ module.exports = function(mod, tpl) {
 			if(domItem.type !== '>') {
 				html += buildTagString(domItem);
 				if(domItem.attributes.repeat) {
-					var items = model[domItem.attributes.repeat];
+					var items = getNested(model, domItem.attributes.repeat);
 					var partial = getPartial(domModel);
 					html += loopRepeats(items, partial);
 				}

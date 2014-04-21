@@ -53,6 +53,21 @@ describe('TemplateToArray', function() {
 
 		});
 
+		describe('a tagName containing a number', function() {
+
+			it('should return an array with one item', function() {
+				expect(templateToArray('<h1></h1>')).to.have.property('length', 2);
+			});
+
+			it('should return an array containing object equivalients for each element', function() {
+				expect(templateToArray('<h1></h1>')[0].type).to.equal('h1');
+				expect(templateToArray('<h1></h1>')[0].close).to.equal(undefined);
+				expect(templateToArray('<h1></h1>')[1].type).to.equal('h1');
+				expect(templateToArray('<h1></h1>')[1].close).to.equal(true);
+			});
+
+		});
+
 		describe('two sibling elements', function() {
 
 			beforeEach(function() {
@@ -253,6 +268,55 @@ describe('TemplateToArray', function() {
 				it('should contain an attributes hash which stores objects for each placeholder attribute', function() {
 					expect(result[0].attributes.show.type).to.equal('>');
 					expect(result[0].attributes.show.bind).to.equal('place');
+				});
+
+			});
+
+		});
+
+		describe('an element with an attribute containing a nested placeholder', function() {
+
+			beforeEach(function() {
+				processTpl('<div show="{{place.here}}"></div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(2);
+			});
+
+			describe('returns an array of objects where each', function() {
+
+				it('should contain an attributes hash of correct length', function() {
+					expect(Object.keys(result[0].attributes).length).to.equal(1);
+				});
+
+				it('should contain an attributes hash which stores objects for each placeholder attribute', function() {
+					expect(result[0].attributes.show.type).to.equal('>');
+					expect(result[0].attributes.show.bind).to.equal('place.here');
+				});
+
+			});
+
+		});
+
+		describe('an element with an attribute containing a nested non-placeholder reference', function() {
+
+			beforeEach(function() {
+				processTpl('<div show="place.here"></div>');
+			});
+
+			it('should return an array of length matching the number of elements', function() {
+				expectLength(2);
+			});
+
+			describe('returns an array of objects where each', function() {
+
+				it('should contain an attributes hash of correct length', function() {
+					expect(Object.keys(result[0].attributes).length).to.equal(1);
+				});
+
+				it('should contain an attributes hash which stores objects for each placeholder attribute', function() {
+					expect(result[0].attributes.show).to.equal('place.here');
 				});
 
 			});
