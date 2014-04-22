@@ -20,7 +20,6 @@
     "gulp": "~3.6.0",
     "gulp-jshint": "~1.5.3",
     "gulp-mocha": "~0.4.1",
-    "backbone": "~1.1.2",
     "chai": "~1.9.1",
     "jshint-stylish": "~0.1.5",
     "map-stream": "~0.1.0",
